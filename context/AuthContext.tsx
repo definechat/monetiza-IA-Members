@@ -10,8 +10,7 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import { auth } from '../firebase';
-import { UserRole } from '../types/user';
-import { adminUsers, AdminUser } from '../data/adminMockData';
+import { UserRole, AdminUser } from '../types/user';
 
 // Hardcoded admin email for demonstration
 const ADMIN_EMAIL = 'admin@monetiza.ia';
@@ -76,40 +75,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // --- Admin Functions ---
   
-  // This is now a REAL function, not simulated.
   const adminResetPassword = async (email: string) => {
     console.log(`[Admin Action] Sending password reset for: ${email}`);
-    // The client SDK allows sending a reset email to any address.
     return sendPasswordResetEmail(auth, email);
   };
-
-  // The following functions are simulated as they require a backend with Firebase Admin SDK.
-  // They manipulate mock data to provide a functional UI experience.
   
   const adminGetAllUsers = async (): Promise<AdminUser[]> => {
-    console.log('[Admin Action] Simulating fetching all users.');
-    // In a real app, this would fetch from a Firestore collection or a backend endpoint.
-    return Promise.resolve([...adminUsers]); // Return a copy to avoid direct mutation
+    console.log('[Admin Action] Simulating fetching all users. No mock data is used.');
+    // In a real app, this would fetch from a backend.
+    // This is empty because the client-side SDK cannot list users for security reasons.
+    return Promise.resolve([]);
   };
   
   const adminUpdateUser = async (userId: string, updates: Partial<AdminUser>): Promise<AdminUser> => {
     console.log(`[Admin Action] Simulating update for user ${userId} with`, updates);
-    const userIndex = adminUsers.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
-        throw new Error("User not found");
-    }
-    // Update the mock data source
-    const updatedUser = { ...adminUsers[userIndex], ...updates };
-    adminUsers[userIndex] = updatedUser;
-    return Promise.resolve(updatedUser);
+    // This is a simulation. In a real app, it would call a backend endpoint.
+    if (!updates.id) throw new Error('Simulation error: user object missing.');
+    return Promise.resolve(updates as AdminUser); // Return the updated object to simulate success.
   };
 
   const adminDeleteUser = async (userId: string) => {
     console.log(`[Admin Action] Simulating deletion of user: ${userId}`);
-    const userIndex = adminUsers.findIndex(u => u.id === userId);
-    if (userIndex > -1) {
-        adminUsers.splice(userIndex, 1);
-    }
+    // This is a simulation of a successful API call.
     return Promise.resolve();
   };
 

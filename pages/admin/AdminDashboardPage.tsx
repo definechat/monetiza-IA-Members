@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import StatCard from '../../components/admin/StatCard';
 import UsersChart from '../../components/admin/UsersChart';
 import { allCourses } from '../../data/mockCourses';
-import { AdminUser } from '../../data/adminMockData';
+import { AdminUser } from '../../types/user';
 import { useAuth } from '../../hooks/useAuth';
 
 const AdminDashboardPage: React.FC = () => {
@@ -23,7 +23,7 @@ const AdminDashboardPage: React.FC = () => {
   const activeStudents = users.filter(u => u.status === 'Ativo').length;
   const inactiveStudents = users.length - activeStudents;
   const totalCourses = allCourses.length;
-  const completionPercentage = 42; // Mocked data
+  const completionPercentage = users.length > 0 ? 42 : 0; // Show 0 if no users
 
   if (loading) {
     return (

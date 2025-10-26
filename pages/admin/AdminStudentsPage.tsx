@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { AdminUser } from '../../data/adminMockData';
+import { AdminUser } from '../../types/user';
 import { useAuth } from '../../hooks/useAuth';
 import EditUserModal from '../../components/admin/EditUserModal';
 
@@ -134,6 +134,8 @@ const AdminStudentsPage: React.FC = () => {
             <div className="overflow-x-auto">
               {loading ? (
                 <div className="text-center p-10 text-gray-400">Carregando usuários...</div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="text-center p-10 text-gray-500">Nenhum usuário encontrado.</div>
               ) : (
                 <table className="min-w-full divide-y divide-gray-700">
                   <thead className="bg-gray-700/50">

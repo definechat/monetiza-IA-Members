@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { AdminUser } from '../../data/adminMockData';
+import { AdminUser } from '../../types/user';
 
 interface EditUserModalProps {
     user: AdminUser;

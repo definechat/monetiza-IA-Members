@@ -1,5 +1,5 @@
 import React from 'react';
-import { AdminUser } from '../../data/adminMockData';
+import { AdminUser } from '../../types/user';
 
 interface UsersChartProps {
     users: AdminUser[];
@@ -7,6 +7,17 @@ interface UsersChartProps {
 
 const UsersChart: React.FC<UsersChartProps> = ({ users }) => {
     
+    if (!users || users.length === 0) {
+        return (
+            <div>
+                <h3 className="text-lg font-bold text-white mb-4">Cadastros de Alunos</h3>
+                <div className="text-center py-16 bg-gray-900/30 rounded-lg">
+                    <p className="text-gray-500">Nenhum dado de cadastro para exibir.</p>
+                </div>
+            </div>
+        );
+    }
+
     const processUserData = (users: AdminUser[]) => {
         const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
         const monthlySignups: { [key: string]: number } = {};

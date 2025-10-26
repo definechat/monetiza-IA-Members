@@ -1,5 +1,5 @@
 // src/context/AuthContext.tsx
-import React, { createContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useCallback, useMemo, useRef } from 'react';
 import { 
   User, 
   onAuthStateChanged, 
@@ -13,6 +13,7 @@ import { auth, db } from '../firebase';
 import { UserRole, AdminUser } from '../types/user';
 import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc, getDoc, addDoc, query, orderBy } from 'firebase/firestore';
 import { Course, Module, Lesson } from '../types/course';
+import { seedInitialData } from '../data/seedData';
 
 // Hardcoded admin email for demonstration
 const ADMIN_EMAIL = 'admin@monetiza.ia';
@@ -57,14 +58,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const seededRef = useRef(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
-      if (user && user.email === ADMIN_EMAIL) {
-        setUserRole(UserRole.ADMIN);
-      } else if (user) {
-        setUserRole(UserRole.MEMBER);
+      if (user) {
+        if (user.email === ADMIN_EMAIL) {
+          setUserRole(UserRole.ADMIN);
+        } else {
+          setUserRole(UserRole.MEMBER);
+        }
+
+        // Seed the database only once after a user is authenticated
+        if (!seededRef.current) {
+          seededRef.current = true; // Mark as attempting to seed
+          try {
+            await seedInitialData();
+          } catch (error) {
+            console.error("Error seeding database:", error);
+          }
+        }
       } else {
         setUserRole(null);
       }

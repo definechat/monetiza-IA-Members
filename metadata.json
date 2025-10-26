@@ -1,0 +1,5 @@
+{
+  "name": "Monetiza IA",
+  "description": "An online course application built with React, TypeScript, and Firebase for authentication. It features protected routes and a clean architecture to ensure a solid starting point for development.",
+  "requestFramePermissions": []
+}

@@ -261,6 +261,58 @@ const initialCoursesData = [
       },
     ],
   },
+  {
+    course: {
+      title: "Aulão Monetiza IA",
+      description: "Um aulão completo para você aprender a monetizar com Inteligência Artificial.",
+      bannerUrl: "https://i.imgur.com/BMfQBfP.jpeg",
+      isLocked: false,
+    },
+    modules: [
+      {
+        module: {
+          title: "Módulo 1: Aulão Completo",
+          description: "Assista à aula completa e aprofunde seus conhecimentos.",
+        },
+        lessons: [
+          {
+            title: "Aulão Completo - Parte Única",
+            duration: "01:30:00",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            description: "Conteúdo detalhado do aulão, cobrindo todas as estratégias de monetização com IA.",
+          },
+        ],
+      },
+      {
+        module: {
+          title: "Módulo 2: Aulão Resumido",
+          description: "Uma versão condensada da aula para revisão rápida dos pontos principais.",
+        },
+        lessons: [
+          {
+            title: "Resumo do Aulão",
+            duration: "15:00",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            description: "Os principais insights e estratégias do aulão em um vídeo curto e objetivo.",
+          },
+        ],
+      },
+      {
+        module: {
+          title: "Módulo 3: Material de Apoio",
+          description: "Baixe os materiais, links e recursos extras mencionados na aula.",
+        },
+        lessons: [
+          {
+            title: "Links e Recursos Adicionais",
+            duration: "02:00",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            description: "Acesse todos os links, ferramentas e materiais de apoio para colocar em prática o que aprendeu.",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export const seedInitialData = async () => {

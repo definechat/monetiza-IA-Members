@@ -78,7 +78,117 @@ const initialCoursesData = [
       },
     ],
   },
-  // ... (rest of the courses with the same structure)
+  {
+    course: {
+      title: "Criando Área de Membros com IA",
+      description: "Aprenda tudo sobre Área de Membros com IA neste curso completo. Este curso.",
+      bannerUrl: "https://i.imgur.com/nBM59eu.jpeg",
+      isLocked: true,
+      password: "123",
+    },
+    modules: [
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Resumo e conclusão do curso." }] },
+    ],
+  },
+  {
+    course: {
+      title: "Criando Site Com IA (Grátis)",
+      description: "Aprenda tudo sobre Site Com IA neste curso completo. Este curso detalhado.",
+      bannerUrl: "https://i.imgur.com/K4v8GtW.jpeg",
+      isLocked: false,
+    },
+    modules: [
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Resumo e conclusão do curso." }] },
+    ],
+  },
+  {
+    course: {
+      title: "Criando Chatbot Com IA",
+      description: "Aprenda tudo sobre ChatBot Com IA neste curso completo. Este curso.",
+      bannerUrl: "https://i.imgur.com/OH06Kq5.jpeg",
+      isLocked: true,
+      password: "123",
+    },
+    modules: [
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Resumo e conclusão do curso." }] },
+    ],
+  },
+    {
+    course: {
+      title: "Criação de Vídeo com IA",
+      description: "Aprenda tudo sobre criação de vídeos com IA neste curso completo. Este curso.",
+      bannerUrl: "https://i.imgur.com/q4Rp27t.jpeg",
+      isLocked: true,
+      password: "123",
+    },
+    modules: [
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Resumo e conclusão do curso." }] },
+    ],
+  },
+  {
+    course: {
+      title: "Facebook Ads para WhatsApp",
+      description: "Aprenda tudo sobre Facebook Ads para WhatsApp neste curso completo. Este curso.",
+      bannerUrl: "https://i.imgur.com/gB1xN7O.jpeg",
+      isLocked: true,
+      password: "123",
+    },
+    modules: [
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Resumo e conclusão do curso." }] },
+    ],
+  },
+  {
+    course: {
+      title: "Kwai (Funil para o WhatsApp)",
+      description: "Aprenda tudo sobre Kwai (Funil para o WhatsApp) neste curso completo. Este curso.",
+      bannerUrl: "https://i.imgur.com/UMdT7Tr.jpeg",
+      isLocked: true,
+      password: "123",
+    },
+    modules: [
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Resumo e conclusão do curso." }] },
+    ],
+  },
+  {
+    course: {
+      title: "Monetizando com IA no YouTube",
+      description: "Aprenda tudo sobre IA no YouTube neste curso completo. Este curso.",
+      bannerUrl: "https://i.imgur.com/la4tUfX.jpeg",
+      isLocked: true,
+      password: "123",
+    },
+    modules: [
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Resumo e conclusão do curso." }] },
+    ],
+  },
+  {
+    course: {
+      title: "lowTicket com IA",
+      description: "Aprenda tudo sobre lowTicket neste curso completo. Este curso detalhado.",
+      bannerUrl: "https://i.imgur.com/WQbRONq.jpeg",
+      isLocked: true,
+      password: "123",
+    },
+    modules: [
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Resumo e conclusão do curso." }] },
+    ],
+  },
   {
     course: {
       title: "Aulão Monetiza IA",
@@ -147,7 +257,7 @@ const initialCoursesData = [
   },
 ];
 
-const SEED_DATA_VERSION = 2; // Increment to force re-seed on next load
+const SEED_DATA_VERSION = 5; // Increment to force re-seed on next load
 
 export const seedInitialData = async () => {
   try {

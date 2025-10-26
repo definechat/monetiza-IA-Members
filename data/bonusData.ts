@@ -435,7 +435,7 @@ https://www.terabox.com/portuguese/sharing/link?surl=gTmh_HgzdmLMmG8MwviZhw
     id: 'saas-revenda',
     title: 'Saas Revenda',
     description: 'Oportunidades e guias para iniciar um negócio de revenda de software.',
-    content: 'Conteúdo para Saas Revenda em breve.',
+    content: "https://docs.google.com/document/d/1Z2Pd6CqnhXaGuURL-IWd7nBPKaMRMMlOuxcsUEsWDTU/edit?usp=sharing",
   },
   {
     id: 'robos',
@@ -520,5 +520,17 @@ https://www.terabox.com/portuguese/sharing/link?surl=gTmh_HgzdmLMmG8MwviZhw
     title: 'Host Grátis',
     description: 'Uma lista de serviços de hospedagem gratuita para seus projetos iniciais.',
     content: 'Conteúdo para Host Grátis em breve.',
+  },
+  {
+    id: 'arsenal-trafego-pago',
+    title: 'Arsenal do Tráfego Pago para Infoprodutos',
+    description: 'Guias e planilhas para otimizar suas campanhas de tráfego pago para infoprodutos.',
+    content: `
+V6 - Passo a passo 2025 para vender infoprodutos
+https://drive.google.com/file/d/1ad5qsrixKO6E98bB5Rzt396LrKgFn99k/view?usp=sharing
+
+Planilha de infoprodutos
+https://docs.google.com/spreadsheets/d/1wEyaV1wmIZV2PtSIbSYSvtz61pMpG4SGxJUk4riQQ-4/edit?usp=sharing
+      `,
   },
 ];

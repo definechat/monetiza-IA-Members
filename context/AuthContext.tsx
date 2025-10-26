@@ -1,5 +1,5 @@
 // src/context/AuthContext.tsx
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { 
   User, 
   onAuthStateChanged, 
@@ -11,7 +11,7 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { UserRole, AdminUser } from '../types/user';
-import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 
 // Hardcoded admin email for demonstration
 const ADMIN_EMAIL = 'admin@monetiza.ia';
@@ -58,7 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return unsubscribe;
   }, []);
 
-  const signup = async (email: string, password: string) => {
+  const signup = useCallback(async (email: string, password: string) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
@@ -74,50 +74,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
 
     return userCredential;
-  };
+  }, []);
 
-  const login = (email: string, password: string) => {
+  const login = useCallback((email: string, password: string) => {
     return signInWithEmailAndPassword(auth, email, password);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     return signOut(auth);
-  };
+  }, []);
 
-  const resetPassword = (email: string) => {
+  const resetPassword = useCallback((email: string) => {
     return sendPasswordResetEmail(auth, email);
-  };
+  }, []);
 
   // --- Admin Functions ---
   
-  const adminResetPassword = async (email: string) => {
+  const adminResetPassword = useCallback(async (email: string) => {
     return sendPasswordResetEmail(auth, email);
-  };
+  }, []);
   
-  const adminGetAllUsers = async (): Promise<AdminUser[]> => {
-    // This is a protected operation. In a real app, you'd secure this with Firestore rules.
+  const adminGetAllUsers = useCallback(async (): Promise<AdminUser[]> => {
     const usersCol = collection(db, "users");
     const userSnapshot = await getDocs(usersCol);
     const userList = userSnapshot.docs.map(doc => doc.data() as AdminUser);
     return userList;
-  };
+  }, []);
   
-  const adminUpdateUser = async (userId: string, updates: Partial<AdminUser>): Promise<AdminUser> => {
+  const adminUpdateUser = useCallback(async (userId: string, updates: Partial<AdminUser>): Promise<AdminUser> => {
     const userRef = doc(db, "users", userId);
     await updateDoc(userRef, updates);
-    const updatedUser = { ...((await getDocs(collection(db, "users"))).docs.find(doc => doc.id === userId)?.data() as AdminUser), ...updates };
-    return updatedUser;
-  };
+    const updatedDoc = await getDoc(userRef);
+    if (!updatedDoc.exists()) {
+      throw new Error("User not found after update.");
+    }
+    return updatedDoc.data() as AdminUser;
+  }, []);
 
-  const adminDeleteUser = async (userId: string) => {
+  const adminDeleteUser = useCallback(async (userId: string) => {
      // Note: This only deletes the Firestore record, not the Firebase Auth user.
      // Deleting the auth user requires a backend environment (e.g., Firebase Functions).
     const userRef = doc(db, "users", userId);
     await deleteDoc(userRef);
-    return Promise.resolve();
-  };
+  }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     currentUser,
     userRole,
     loading,
@@ -129,7 +130,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     adminDeleteUser,
     adminUpdateUser,
     adminGetAllUsers,
-  };
+  }), [currentUser, userRole, loading, signup, login, logout, resetPassword, adminResetPassword, adminDeleteUser, adminUpdateUser, adminGetAllUsers]);
 
   return (
     <AuthContext.Provider value={value}>

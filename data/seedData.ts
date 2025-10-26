@@ -1,5 +1,5 @@
 import { db } from '../firebase';
-import { collection, addDoc, query, where, getDocs, limit } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, limit, updateDoc, setDoc } from 'firebase/firestore';
 
 const initialCoursesData = [
   {
@@ -147,32 +147,58 @@ const initialCoursesData = [
 ];
 
 export const seedInitialData = async () => {
-    try {
-        for (const courseData of initialCoursesData) {
-            const coursesRef = collection(db, 'courses');
-            const q = query(coursesRef, where("title", "==", courseData.course.title), limit(1));
-            const snapshot = await getDocs(q);
+  try {
+    for (const courseData of initialCoursesData) {
+      const coursesRef = collection(db, 'courses');
+      const q = query(coursesRef, where("title", "==", courseData.course.title), limit(1));
+      const snapshot = await getDocs(q);
 
-            if (snapshot.empty) {
-                console.log(`Seeding course: ${courseData.course.title}`);
-                // Add course
-                const courseDocRef = await addDoc(coursesRef, courseData.course);
-                const courseId = courseDocRef.id;
+      let courseId: string;
 
-                // Add modules and lessons
-                for (const moduleData of courseData.modules) {
-                    const modulesRef = collection(db, 'courses', courseId, 'modules');
-                    const moduleDocRef = await addDoc(modulesRef, moduleData.module);
-                    const moduleId = moduleDocRef.id;
+      if (snapshot.empty) {
+        // Course doesn't exist, create it
+        const courseDocRef = await addDoc(coursesRef, courseData.course);
+        courseId = courseDocRef.id;
+      } else {
+        // Course exists, forcefully update it using setDoc with merge to ensure data is correct
+        const docRef = snapshot.docs[0].ref;
+        courseId = snapshot.docs[0].id;
+        await setDoc(docRef, courseData.course, { merge: true });
+      }
 
-                    for (const lessonData of moduleData.lessons) {
-                        const lessonsRef = collection(db, 'courses', courseId, 'modules', moduleId, 'lessons');
-                        await addDoc(lessonsRef, lessonData);
-                    }
-                }
-            }
+      // Sync modules and lessons for the course
+      for (const moduleData of courseData.modules) {
+        const modulesRef = collection(db, 'courses', courseId, 'modules');
+        const moduleQuery = query(modulesRef, where("title", "==", moduleData.module.title), limit(1));
+        const moduleSnapshot = await getDocs(moduleQuery);
+        
+        let moduleId: string;
+
+        if (moduleSnapshot.empty) {
+          const moduleDocRef = await addDoc(modulesRef, moduleData.module);
+          moduleId = moduleDocRef.id;
+        } else {
+          const moduleDocRef = moduleSnapshot.docs[0].ref;
+          moduleId = moduleSnapshot.docs[0].id;
+          await setDoc(moduleDocRef, moduleData.module, { merge: true });
         }
-    } catch (error) {
-        console.error("Error seeding initial data:", error);
+
+        for (const lessonData of moduleData.lessons) {
+          const lessonsRef = collection(db, 'courses', courseId, 'modules', moduleId, 'lessons');
+          const lessonQuery = query(lessonsRef, where("title", "==", lessonData.title), limit(1));
+          const lessonSnapshot = await getDocs(lessonQuery);
+
+          if (lessonSnapshot.empty) {
+            await addDoc(lessonsRef, lessonData);
+          } else {
+            const lessonDocRef = lessonSnapshot.docs[0].ref;
+            await setDoc(lessonDocRef, lessonData, { merge: true });
+          }
+        }
+      }
     }
+  } catch (error) {
+    console.error("Error seeding initial data:", error);
+    throw error; // Re-throw to be caught by the caller
+  }
 };

@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../firebase';
 import { UserRole } from '../types/user';
+import { adminUsers, AdminUser } from '../data/adminMockData';
 
 // Hardcoded admin email for demonstration
 const ADMIN_EMAIL = 'admin@monetiza.ia';
@@ -25,6 +26,8 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<void>;
   adminResetPassword: (email: string) => Promise<void>;
   adminDeleteUser: (userId: string) => Promise<void>;
+  adminUpdateUser: (userId: string, updates: Partial<AdminUser>) => Promise<AdminUser>;
+  adminGetAllUsers: () => Promise<AdminUser[]>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,23 +74,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return sendPasswordResetEmail(auth, email);
   };
 
-  // --- Admin Functions (Simulated) ---
-  // In a real application, these would call Firebase Functions that use the Admin SDK.
+  // --- Admin Functions ---
   
+  // This is now a REAL function, not simulated.
   const adminResetPassword = async (email: string) => {
-    console.log(`[Admin Action] Simulating password reset for: ${email}`);
-    // This requires the Admin SDK on a server to generate a link for another user.
-    alert(`Funcionalidade simulada: um e-mail de redefinição de senha seria enviado para ${email}.`);
-    return Promise.resolve();
+    console.log(`[Admin Action] Sending password reset for: ${email}`);
+    // The client SDK allows sending a reset email to any address.
+    return sendPasswordResetEmail(auth, email);
+  };
+
+  // The following functions are simulated as they require a backend with Firebase Admin SDK.
+  // They manipulate mock data to provide a functional UI experience.
+  
+  const adminGetAllUsers = async (): Promise<AdminUser[]> => {
+    console.log('[Admin Action] Simulating fetching all users.');
+    // In a real app, this would fetch from a Firestore collection or a backend endpoint.
+    return Promise.resolve([...adminUsers]); // Return a copy to avoid direct mutation
+  };
+  
+  const adminUpdateUser = async (userId: string, updates: Partial<AdminUser>): Promise<AdminUser> => {
+    console.log(`[Admin Action] Simulating update for user ${userId} with`, updates);
+    const userIndex = adminUsers.findIndex(u => u.id === userId);
+    if (userIndex === -1) {
+        throw new Error("User not found");
+    }
+    // Update the mock data source
+    const updatedUser = { ...adminUsers[userIndex], ...updates };
+    adminUsers[userIndex] = updatedUser;
+    return Promise.resolve(updatedUser);
   };
 
   const adminDeleteUser = async (userId: string) => {
     console.log(`[Admin Action] Simulating deletion of user: ${userId}`);
-    // This requires the Admin SDK on a server to delete users.
-    alert(`Funcionalidade simulada: o usuário com ID ${userId} seria deletado.`);
+    const userIndex = adminUsers.findIndex(u => u.id === userId);
+    if (userIndex > -1) {
+        adminUsers.splice(userIndex, 1);
+    }
     return Promise.resolve();
   };
-
 
   const value = {
     currentUser,
@@ -98,7 +122,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     resetPassword,
     adminResetPassword,
-    adminDeleteUser
+    adminDeleteUser,
+    adminUpdateUser,
+    adminGetAllUsers,
   };
 
   return (

@@ -1,13 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import StatCard from '../../components/admin/StatCard';
 import UsersChart from '../../components/admin/UsersChart';
 import { allCourses } from '../../data/mockCourses';
-import { adminUsers } from '../../data/adminMockData';
+import { AdminUser } from '../../data/adminMockData';
+import { useAuth } from '../../hooks/useAuth';
 
 const AdminDashboardPage: React.FC = () => {
-  const activeStudents = adminUsers.filter(u => u.status === 'Ativo').length;
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { adminGetAllUsers } = useAuth();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      const fetchedUsers = await adminGetAllUsers();
+      setUsers(fetchedUsers);
+      setLoading(false);
+    };
+    fetchUsers();
+  }, [adminGetAllUsers]);
+
+  const activeStudents = users.filter(u => u.status === 'Ativo').length;
+  const inactiveStudents = users.length - activeStudents;
   const totalCourses = allCourses.length;
   const completionPercentage = 42; // Mocked data
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-24 w-24 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -28,7 +52,7 @@ const AdminDashboardPage: React.FC = () => {
           />
           <StatCard 
             title="Alunos Inativos" 
-            value="0"
+            value={inactiveStudents.toString()}
             icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>}
             color="bg-rose-500"
           />
@@ -48,7 +72,7 @@ const AdminDashboardPage: React.FC = () => {
 
         {/* Chart */}
         <div className="bg-gray-800 rounded-lg shadow-xl p-6">
-          <UsersChart />
+          <UsersChart users={users} />
         </div>
       </div>
     </div>

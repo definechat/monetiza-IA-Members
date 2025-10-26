@@ -9,8 +9,9 @@ import {
   UserCredential,
   sendPasswordResetEmail,
 } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { UserRole, AdminUser } from '../types/user';
+import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
 
 // Hardcoded admin email for demonstration
 const ADMIN_EMAIL = 'admin@monetiza.ia';
@@ -57,8 +58,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return unsubscribe;
   }, []);
 
-  const signup = (email: string, password: string) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+  const signup = async (email: string, password: string) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    
+    // Create a user document in Firestore
+    const userRef = doc(db, "users", user.uid);
+    await setDoc(userRef, {
+      id: user.uid,
+      email: user.email,
+      name: user.email?.split('@')[0] || 'Novo Usuário',
+      creationDate: new Date().toLocaleString('pt-BR'),
+      document: 'N/A',
+      status: 'Ativo',
+    });
+
+    return userCredential;
   };
 
   const login = (email: string, password: string) => {
@@ -76,27 +91,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // --- Admin Functions ---
   
   const adminResetPassword = async (email: string) => {
-    console.log(`[Admin Action] Sending password reset for: ${email}`);
     return sendPasswordResetEmail(auth, email);
   };
   
   const adminGetAllUsers = async (): Promise<AdminUser[]> => {
-    console.log('[Admin Action] Simulating fetching all users. No mock data is used.');
-    // In a real app, this would fetch from a backend.
-    // This is empty because the client-side SDK cannot list users for security reasons.
-    return Promise.resolve([]);
+    // This is a protected operation. In a real app, you'd secure this with Firestore rules.
+    const usersCol = collection(db, "users");
+    const userSnapshot = await getDocs(usersCol);
+    const userList = userSnapshot.docs.map(doc => doc.data() as AdminUser);
+    return userList;
   };
   
   const adminUpdateUser = async (userId: string, updates: Partial<AdminUser>): Promise<AdminUser> => {
-    console.log(`[Admin Action] Simulating update for user ${userId} with`, updates);
-    // This is a simulation. In a real app, it would call a backend endpoint.
-    if (!updates.id) throw new Error('Simulation error: user object missing.');
-    return Promise.resolve(updates as AdminUser); // Return the updated object to simulate success.
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, updates);
+    const updatedUser = { ...((await getDocs(collection(db, "users"))).docs.find(doc => doc.id === userId)?.data() as AdminUser), ...updates };
+    return updatedUser;
   };
 
   const adminDeleteUser = async (userId: string) => {
-    console.log(`[Admin Action] Simulating deletion of user: ${userId}`);
-    // This is a simulation of a successful API call.
+     // Note: This only deletes the Firestore record, not the Firebase Auth user.
+     // Deleting the auth user requires a backend environment (e.g., Firebase Functions).
+    const userRef = doc(db, "users", userId);
+    await deleteDoc(userRef);
     return Promise.resolve();
   };
 

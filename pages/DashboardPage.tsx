@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CourseCarousel from '../components/CourseCarousel';
 import HeroBanner from '../components/HeroBanner';
@@ -6,21 +6,31 @@ import Sidebar from '../components/Sidebar';
 import UserHeader from '../components/UserHeader';
 import CoursePasswordModal from '../components/CoursePasswordModal';
 import { useCourseAccess } from '../hooks/useCourseAccess';
-import { Course, allCourses } from '../data/mockCourses';
-
-// IDs for the carousels
-const popularCourseIds = ['curso-1', 'curso-2', 'curso-3', 'curso-4', 'curso-5'];
-const newCourseIds = ['curso-6', 'curso-7', 'curso-8', 'curso-9', 'curso-10'];
-
-const popularCourses = allCourses.filter(course => popularCourseIds.includes(course.id));
-const newCourses = allCourses.filter(course => newCourseIds.includes(course.id));
-
+import { Course } from '../types/course';
+import { useAuth } from '../hooks/useAuth';
 
 const DashboardPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const { unlockCourse } = useCourseAccess();
   const navigate = useNavigate();
+  const { getAllCourses } = useAuth();
+  
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const courses = await getAllCourses();
+        setAllCourses(courses);
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+      }
+      setLoading(false);
+    };
+    fetchCourses();
+  }, [getAllCourses]);
 
   const handleCourseClick = (course: Course) => {
     setSelectedCourse(course);
@@ -36,6 +46,18 @@ const DashboardPage: React.FC = () => {
     navigate(`/courses/${courseId}/modules`);
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+  
+  // Example of splitting courses into categories. In a real app, this might come from the course data itself.
+  const popularCourses = allCourses.slice(0, 5);
+  const newCourses = allCourses.slice(5);
+
   return (
     <>
       <div className="flex h-screen bg-gray-900 text-gray-300">
@@ -46,7 +68,7 @@ const DashboardPage: React.FC = () => {
             <HeroBanner />
             <div className="relative z-10 -mt-10 sm:-mt-16 md:-mt-20">
               <CourseCarousel title="Cursos Populares" courses={popularCourses} onCourseClick={handleCourseClick} />
-              <CourseCarousel title="Novos Lançamentos" courses={newCourses} onCourseClick={handleCourseClick} />
+              {newCourses.length > 0 && <CourseCarousel title="Novos Lançamentos" courses={newCourses} onCourseClick={handleCourseClick} />}
             </div>
           </main>
         </div>

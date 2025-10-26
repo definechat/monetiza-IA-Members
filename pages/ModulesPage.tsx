@@ -1,21 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import UserHeader from '../components/UserHeader';
-import { allCourses } from '../data/mockCourses';
-import { courseModules } from '../data/mockModules';
-import { courseLessons } from '../data/mockLessons';
 import { useCourseAccess } from '../hooks/useCourseAccess';
+import { Course, Module, Lesson } from '../types/course';
+import { useAuth } from '../hooks/useAuth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+
 
 const ModulesPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { isCourseUnlocked } = useCourseAccess();
-  const course = allCourses.find(c => c.id === courseId);
-  const modules = (courseId ? courseModules[courseId] : null) || [];
+  const { getModulesForCourse, getLessonsForModule } = useAuth();
+  
+  const [course, setCourse] = useState<Course | null>(null);
+  const [modules, setModules] = useState<Module[]>([]);
+  const [firstLessons, setFirstLessons] = useState<{[key: string]: string | null}>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!courseId) {
+      setLoading(false);
+      return;
+    };
+
+    const fetchCourseData = async () => {
+      try {
+        const courseRef = doc(db, 'courses', courseId);
+        const courseSnap = await getDoc(courseRef);
+        if (courseSnap.exists()) {
+          const courseData = { id: courseSnap.id, ...courseSnap.data() } as Course;
+          setCourse(courseData);
+
+          if (courseData.isLocked && !isCourseUnlocked(courseId)) {
+            // Early exit if course is locked
+            setLoading(false);
+            return;
+          }
+
+          const fetchedModules = await getModulesForCourse(courseId);
+          setModules(fetchedModules);
+          
+          const firstLessonIds: {[key: string]: string | null} = {};
+          for (const module of fetchedModules) {
+              const lessons = await getLessonsForModule(courseId, module.id);
+              firstLessonIds[module.id] = lessons.length > 0 ? lessons[0].id : null;
+          }
+          setFirstLessons(firstLessonIds);
+        }
+      } catch (error) {
+        console.error("Failed to fetch course data:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchCourseData();
+  }, [courseId, isCourseUnlocked, getModulesForCourse, getLessonsForModule]);
+
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   if (course && course.isLocked && !isCourseUnlocked(course.id)) {
-    // If course is locked and not in the unlocked set, redirect
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -28,12 +81,6 @@ const ModulesPage: React.FC = () => {
         </Link>
       </div>
     );
-  }
-  
-  const getFirstLessonId = (moduleId: string): string | null => {
-    if (!courseId) return null;
-    const lessonsForModule = courseLessons[courseId]?.[moduleId]?.lessons;
-    return lessonsForModule && lessonsForModule.length > 0 ? lessonsForModule[0].id : null;
   }
 
   return (
@@ -54,8 +101,8 @@ const ModulesPage: React.FC = () => {
 
             <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {modules.map((module) => {
-                const firstLessonId = getFirstLessonId(module.id);
-                if (!firstLessonId) return null; // Or render a disabled card
+                const firstLessonId = firstLessons[module.id];
+                if (!firstLessonId) return null;
 
                 return (
                   <Link 

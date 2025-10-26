@@ -19,6 +19,8 @@ import { CourseAccessProvider } from './context/CourseAccessContext';
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminStudentsPage from './pages/admin/AdminStudentsPage';
+import AdminCoursesListPage from './pages/admin/AdminCoursesListPage';
+import AdminCourseEditPage from './pages/admin/AdminCourseEditPage';
 
 function App() {
   return (
@@ -101,6 +103,8 @@ function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboardPage />} />
               <Route path="students" element={<AdminStudentsPage />} />
+              <Route path="courses" element={<AdminCoursesListPage />} />
+              <Route path="courses/:courseId/edit" element={<AdminCourseEditPage />} />
             </Route>
            <Route
               path="/bonus"

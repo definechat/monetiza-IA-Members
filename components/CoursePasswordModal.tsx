@@ -1,5 +1,6 @@
 import React, { useState, FormEvent } from 'react';
-import { Course } from '../data/mockCourses';
+// Fix: Updated course type import from missing mock file to the correct type definition file.
+import { Course } from '../types/course';
 
 interface CoursePasswordModalProps {
   course: Course;

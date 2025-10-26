@@ -1,28 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import StatCard from '../../components/admin/StatCard';
 import UsersChart from '../../components/admin/UsersChart';
-import { allCourses } from '../../data/mockCourses';
+// Fix: Removed import from missing mock file. Course data is now fetched from the context.
+import { Course } from '../../types/course';
 import { AdminUser } from '../../types/user';
 import { useAuth } from '../../hooks/useAuth';
 
 const AdminDashboardPage: React.FC = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
+  // Fix: Added state to store fetched course data.
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const { adminGetAllUsers } = useAuth();
+  // Fix: Fetched getAllCourses from useAuth to get dynamic course data.
+  const { adminGetAllUsers, getAllCourses } = useAuth();
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    // Fix: Fetched both users and courses data.
+    const fetchData = async () => {
       setLoading(true);
-      const fetchedUsers = await adminGetAllUsers();
-      setUsers(fetchedUsers);
+      try {
+        const [fetchedUsers, fetchedCourses] = await Promise.all([
+          adminGetAllUsers(),
+          getAllCourses()
+        ]);
+        setUsers(fetchedUsers);
+        setCourses(fetchedCourses);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      }
       setLoading(false);
     };
-    fetchUsers();
-  }, [adminGetAllUsers]);
+    fetchData();
+  }, [adminGetAllUsers, getAllCourses]);
 
   const activeStudents = users.filter(u => u.status === 'Ativo').length;
   const inactiveStudents = users.length - activeStudents;
-  const totalCourses = allCourses.length;
+  // Fix: Used the length of the fetched courses array.
+  const totalCourses = courses.length;
   const completionPercentage = users.length > 0 ? 42 : 0; // Show 0 if no users
 
   if (loading) {

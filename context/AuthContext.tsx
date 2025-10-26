@@ -1,5 +1,5 @@
 // src/context/AuthContext.tsx
-import React, { createContext, useState, useEffect, ReactNode, useCallback, useMemo, useRef } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { 
   User, 
   onAuthStateChanged, 
@@ -58,7 +58,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
-  const seededRef = useRef(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -70,17 +69,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUserRole(UserRole.MEMBER);
         }
 
-        // Seed the database only once after a user is authenticated
-        if (!seededRef.current) {
-          seededRef.current = true; // Mark as attempting to seed
+        // Seed the database once per session to ensure data is up to date
+        const hasSeededThisSession = sessionStorage.getItem('dbSeeded');
+        if (!hasSeededThisSession) {
           try {
             await seedInitialData();
+            sessionStorage.setItem('dbSeeded', 'true'); // Flag that seeding is done for this session
           } catch (error) {
             console.error("Error seeding database:", error);
           }
         }
       } else {
         setUserRole(null);
+        sessionStorage.removeItem('dbSeeded'); // Clear on logout to allow re-seed on next login
       }
       setLoading(false);
     });

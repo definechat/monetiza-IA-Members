@@ -219,7 +219,7 @@ const initialCoursesData = [
     course: {
       title: "lowTicket com IA",
       description: "Aprenda tudo sobre lowTicket neste curso completo. Este curso detalhado.",
-      bannerUrl: "https://i.imgur.com/7gK2QyS.png",
+      bannerUrl: "https://i.imgur.com/WQbRONq.jpeg",
       isLocked: true,
       password: "123",
     },

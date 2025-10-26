@@ -64,12 +64,31 @@ const LoginPage: React.FC = () => {
       // onAuthStateChanged will handle navigation
     } catch (err: any) {
       console.error("Google Sign-in Error:", err);
-      let errorMessage = 'Falha ao entrar com o Google. Tente novamente.';
-       if (err.code === 'auth/popup-closed-by-user') {
-            errorMessage = 'Login com Google cancelado.';
-        } else if (err.code === 'auth/account-exists-with-different-credential') {
-            errorMessage = 'Já existe uma conta com este e-mail, mas com credenciais diferentes.';
+      let errorMessage;
+      if (err.code) {
+        switch (err.code) {
+          case 'auth/popup-closed-by-user':
+            errorMessage = 'Login com Google cancelado pelo usuário.';
+            break;
+          case 'auth/account-exists-with-different-credential':
+            errorMessage = 'Já existe uma conta com este e-mail, mas com método de login diferente.';
+            break;
+          case 'auth/popup-blocked':
+            errorMessage = 'O pop-up de login foi bloqueado pelo navegador. Por favor, habilite os pop-ups para este site.';
+            break;
+          case 'auth/unauthorized-domain':
+             errorMessage = 'Este domínio não está autorizado para login. Por favor, contate o suporte.';
+             break;
+          case 'auth/operation-not-allowed':
+             errorMessage = 'Login com Google não está habilitado. Por favor, contate o suporte.';
+             break;
+          default:
+            errorMessage = 'Falha ao entrar com o Google. Tente novamente mais tarde.';
+            break;
         }
+      } else {
+        errorMessage = 'Ocorreu um erro inesperado. Verifique sua conexão e tente novamente.';
+      }
       setError(errorMessage);
     }
     setLoading(false);

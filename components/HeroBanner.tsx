@@ -2,7 +2,7 @@ import React from 'react';
 
 const HeroBanner: React.FC = () => {
   return (
-    <div className="relative aspect-video w-full text-white overflow-hidden bg-black">
+    <div className="relative aspect-video lg:aspect-auto lg:h-[500px] w-full text-white overflow-hidden bg-black">
       {/* Image Background */}
       <img
         src="https://i.imgur.com/MErYQV2.jpeg"

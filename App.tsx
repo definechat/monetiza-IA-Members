@@ -10,13 +10,15 @@ import FerramentasPage from './pages/FerramentasPage';
 import ProfilePage from './pages/ProfilePage';
 import PromptGeneratorPage from './pages/PromptGeneratorPage';
 import ModulesPage from './pages/ModulesPage';
-import AdminPage from './pages/AdminPage';
 import AdminRoute from './components/AdminRoute';
 import VideoLessonPage from './pages/VideoLessonPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import BonusPage from './pages/BonusPage';
 import BonusDetailsPage from './pages/BonusDetailsPage';
 import { CourseAccessProvider } from './context/CourseAccessContext';
+import AdminLayout from './layouts/AdminLayout';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminStudentsPage from './pages/admin/AdminStudentsPage';
 
 function App() {
   return (
@@ -92,10 +94,14 @@ function App() {
               path="/admin"
               element={
                 <AdminRoute>
-                  <AdminPage />
+                  <AdminLayout />
                 </AdminRoute>
               }
-            />
+            >
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboardPage />} />
+              <Route path="students" element={<AdminStudentsPage />} />
+            </Route>
            <Route
               path="/bonus"
               element={

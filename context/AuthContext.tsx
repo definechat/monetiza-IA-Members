@@ -23,6 +23,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  adminResetPassword: (email: string) => Promise<void>;
+  adminDeleteUser: (userId: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -69,6 +71,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return sendPasswordResetEmail(auth, email);
   };
 
+  // --- Admin Functions (Simulated) ---
+  // In a real application, these would call Firebase Functions that use the Admin SDK.
+  
+  const adminResetPassword = async (email: string) => {
+    console.log(`[Admin Action] Simulating password reset for: ${email}`);
+    // This requires the Admin SDK on a server to generate a link for another user.
+    alert(`Funcionalidade simulada: um e-mail de redefinição de senha seria enviado para ${email}.`);
+    return Promise.resolve();
+  };
+
+  const adminDeleteUser = async (userId: string) => {
+    console.log(`[Admin Action] Simulating deletion of user: ${userId}`);
+    // This requires the Admin SDK on a server to delete users.
+    alert(`Funcionalidade simulada: o usuário com ID ${userId} seria deletado.`);
+    return Promise.resolve();
+  };
+
+
   const value = {
     currentUser,
     userRole,
@@ -77,6 +97,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     resetPassword,
+    adminResetPassword,
+    adminDeleteUser
   };
 
   return (

@@ -10,4 +10,5 @@ export interface AdminUser {
   creationDate: string;
   document: string;
   status: 'Ativo' | 'Inativo';
+  enrolledCourses?: string[];
 }

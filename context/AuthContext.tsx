@@ -84,6 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       creationDate: new Date().toLocaleString('pt-BR'),
       document: 'N/A',
       status: 'Ativo',
+      enrolledCourses: [],
     });
     return userCredential;
   }, []);
@@ -189,7 +190,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     getAllCourses, addCourse, updateCourse, deleteCourse,
     getModulesForCourse, addModule, updateModule, deleteModule,
     getLessonsForModule, addLesson, updateLesson, deleteLesson,
-  }), [currentUser, userRole, loading, signup, login, logout, resetPassword, adminResetPassword, adminDeleteUser, adminUpdateUser, adminGetAllUsers, getAllCourses, addCourse, updateCourse, deleteCourse, getModulesForCourse, addModule, updateModule, deleteModule, getLessonsForModule, addLesson, updateLesson, deleteLesson]);
+  }), [currentUser, userRole, loading]);
 
   return (
     <AuthContext.Provider value={value}>

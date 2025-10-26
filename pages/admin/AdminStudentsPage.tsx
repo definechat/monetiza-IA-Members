@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { AdminUser } from '../../types/user';
+import { Course } from '../../types/course';
 import { useAuth } from '../../hooks/useAuth';
 import EditUserModal from '../../components/admin/EditUserModal';
 
@@ -23,8 +24,9 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
 
 const AdminStudentsPage: React.FC = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ email: '', name: '', status: '' });
+  const [filters, setFilters] = useState({ email: '', name: '', status: '', courseId: '' });
   
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [resettingUser, setResettingUser] = useState<AdminUser | null>(null);
@@ -32,28 +34,33 @@ const AdminStudentsPage: React.FC = () => {
   
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   
-  const { adminGetAllUsers, adminResetPassword, adminDeleteUser, adminUpdateUser } = useAuth();
+  const { adminGetAllUsers, adminResetPassword, adminDeleteUser, adminUpdateUser, getAllCourses } = useAuth();
   
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            const fetchedUsers = await adminGetAllUsers();
+            const [fetchedUsers, fetchedCourses] = await Promise.all([
+                adminGetAllUsers(),
+                getAllCourses(),
+            ]);
             setUsers(fetchedUsers);
+            setCourses(fetchedCourses);
         } catch (error) {
-            setToast({ message: 'Falha ao carregar usuários.', type: 'error' });
+            setToast({ message: 'Falha ao carregar dados.', type: 'error' });
         }
         setLoading(false);
     };
-    fetchUsers();
-  }, [adminGetAllUsers]);
+    fetchData();
+  }, [adminGetAllUsers, getAllCourses]);
   
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
       const nameMatch = user.name.toLowerCase().includes(filters.name.toLowerCase());
       const emailMatch = user.email.toLowerCase().includes(filters.email.toLowerCase());
       const statusMatch = filters.status ? user.status === filters.status : true;
-      return nameMatch && emailMatch && statusMatch;
+      const courseMatch = filters.courseId ? (user.enrolledCourses || []).includes(filters.courseId) : true;
+      return nameMatch && emailMatch && statusMatch && courseMatch;
     });
   }, [users, filters]);
   
@@ -118,7 +125,7 @@ const AdminStudentsPage: React.FC = () => {
           </div>
 
           <div className="bg-gray-800 rounded-lg shadow-xl p-4 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
               <input type="text" name="name" value={filters.name} onChange={handleFilterChange} placeholder="Filtrar por Nome" className="w-full bg-gray-700 text-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500" />
               <input type="text" name="email" value={filters.email} onChange={handleFilterChange} placeholder="Filtrar por Email" className="w-full bg-gray-700 text-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500" />
               <select name="status" value={filters.status} onChange={handleFilterChange} className="w-full bg-gray-700 text-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -126,7 +133,13 @@ const AdminStudentsPage: React.FC = () => {
                 <option value="Ativo">Ativo</option>
                 <option value="Inativo">Inativo</option>
               </select>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Filtrar</button>
+              <select name="courseId" value={filters.courseId} onChange={handleFilterChange} className="w-full bg-gray-700 text-gray-300 rounded-md p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Filtrar por Curso</option>
+                {courses.map(course => (
+                  <option key={course.id} value={course.id}>{course.title}</option>
+                ))}
+              </select>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-md h-full">Filtrar</button>
             </div>
           </div>
           

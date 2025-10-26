@@ -39,6 +39,15 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(75, 85, 99, 0.7) transparent; /* thumb and track color */
 }
+
+/* Utility to hide the scrollbar completely */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 </style>
 </head>
   <body class="bg-gray-100">

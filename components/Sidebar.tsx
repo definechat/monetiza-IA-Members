@@ -5,9 +5,10 @@ import { UserRole } from '../types/user';
 
 interface SidebarProps {
   isOpen: boolean;
+  onToggle: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
   const { userRole } = useAuth();
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
@@ -23,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     <aside className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white flex flex-col p-4 z-40 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       <nav className="flex-grow space-y-2 mt-16">
         <NavLink to="/dashboard" className={navLinkClasses}>
-            <svg xmlns="http://www.w.3.org/2000/svg" className={iconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" className={iconClasses} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
             Dashboard
         </NavLink>
         <NavLink to="/comunidade" className={navLinkClasses}>
@@ -51,6 +52,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
           </NavLink>
         )}
       </nav>
+      
+       {/* Toggle Button */}
+      <button 
+        onClick={onToggle}
+        className="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-gray-700 hover:bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center focus:outline-none z-50 transition-all"
+        aria-label="Toggle sidebar"
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          className={`h-5 w-5 transition-transform duration-300 ${isOpen ? '' : 'rotate-180'}`} 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
     </aside>
   );
 };

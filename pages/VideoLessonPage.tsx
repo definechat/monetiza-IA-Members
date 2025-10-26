@@ -25,6 +25,8 @@ const VideoLessonPage: React.FC = () => {
   const [moduleInfo, setModuleInfo] = useState<Module | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   useEffect(() => {
     if (!courseId || !moduleId) {
@@ -115,9 +117,9 @@ const VideoLessonPage: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-900 text-gray-300">
-      <Sidebar isOpen={showSidebar} />
+      <Sidebar isOpen={showSidebar} onToggle={toggleSidebar} />
       <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${showSidebar ? 'lg:ml-64' : ''}`}>
-        <UserHeader onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} className={`${isCinemaMode ? 'hidden' : ''}`} />
+        <UserHeader onToggleSidebar={toggleSidebar} className={`${isCinemaMode ? 'hidden' : ''}`} />
         <main className="flex-1 flex flex-col lg:flex-row overflow-y-auto">
           <div className="flex-grow bg-black transition-all duration-300 ease-in-out flex flex-col">
             <div className="w-full aspect-video flex-shrink-0">

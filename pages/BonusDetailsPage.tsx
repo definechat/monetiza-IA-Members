@@ -7,6 +7,7 @@ import { bonusData } from '../data/bonusData';
 const BonusDetailsPage: React.FC = () => {
   const { bonusId } = useParams<{ bonusId: string }>();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   
   const bonus = bonusId ? bonusData.find(b => b.id === bonusId) : undefined;
 
@@ -25,9 +26,9 @@ const BonusDetailsPage: React.FC = () => {
   if (!bonus) {
     return (
       <div className="flex h-screen bg-gray-900 text-gray-300">
-        <Sidebar isOpen={isSidebarOpen} />
+        <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${isSidebarOpen ? 'lg:ml-64' : ''}`}>
-          <UserHeader onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+          <UserHeader onToggleSidebar={toggleSidebar} />
           <main className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <h1 className="text-4xl font-extrabold text-white sm:text-5xl">
@@ -48,9 +49,9 @@ const BonusDetailsPage: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-900 text-gray-300">
-      <Sidebar isOpen={isSidebarOpen} />
+      <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
       <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${isSidebarOpen ? 'lg:ml-64' : ''}`}>
-        <UserHeader onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+        <UserHeader onToggleSidebar={toggleSidebar} />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <div className="max-w-4xl mx-auto">
             <Link to="/bonus" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-6">

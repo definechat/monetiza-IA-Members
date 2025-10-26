@@ -25,6 +25,8 @@ const PromptGeneratorPage: React.FC = () => {
   const [copySuccess, setCopySuccess] = useState('');
 
   const tool = toolType ? toolDetails[toolType] : { title: 'Ferramenta não encontrada', icon: null };
+  
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const handleGenerate = () => {
     setIsLoading(true);
@@ -108,9 +110,9 @@ Não espere mais! Clique aqui para adquirir o [Nome do Produto/Ebook] agora mesm
 
   return (
     <div className="flex h-screen bg-gray-900 text-gray-300">
-      <Sidebar isOpen={isSidebarOpen} />
+      <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
       <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${isSidebarOpen ? 'lg:ml-64' : ''}`}>
-        <UserHeader onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+        <UserHeader onToggleSidebar={toggleSidebar} />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <div className="max-w-4xl mx-auto">
             <Link to="/ferramentas" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-6">

@@ -57,13 +57,15 @@ const DashboardPage: React.FC = () => {
   // Example of splitting courses into categories. In a real app, this might come from the course data itself.
   const popularCourses = allCourses.slice(0, 5);
   const newCourses = allCourses.slice(5);
+  
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
     <>
       <div className="flex h-screen bg-gray-900 text-gray-300">
-        <Sidebar isOpen={isSidebarOpen} />
+        <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${isSidebarOpen ? 'lg:ml-64' : ''}`}>
-          <UserHeader onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+          <UserHeader onToggleSidebar={toggleSidebar} />
           <main className="flex-1 overflow-y-auto">
             <HeroBanner />
             <div className="relative z-10 -mt-10 sm:-mt-16 md:-mt-20">

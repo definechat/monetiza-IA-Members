@@ -9,7 +9,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, signup, signInWithGoogle, resetPassword } = useAuth();
+  const { login, signup, resetPassword } = useAuth();
 
   const handleAuthSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -49,45 +49,6 @@ const LoginPage: React.FC = () => {
       } else {
         console.error("Authentication Error:", err);
         errorMessage = 'Falha na autenticação. Verifique sua conexão e tente novamente.';
-      }
-      setError(errorMessage);
-    }
-    setLoading(false);
-  };
-  
-  const handleGoogleSignIn = async () => {
-    setError('');
-    setMessage('');
-    setLoading(true);
-    try {
-      await signInWithGoogle();
-      // onAuthStateChanged will handle navigation
-    } catch (err: any) {
-      console.error("Google Sign-in Error:", err);
-      let errorMessage;
-      if (err.code) {
-        switch (err.code) {
-          case 'auth/popup-closed-by-user':
-            errorMessage = 'Login com Google cancelado pelo usuário.';
-            break;
-          case 'auth/account-exists-with-different-credential':
-            errorMessage = 'Já existe uma conta com este e-mail, mas com método de login diferente.';
-            break;
-          case 'auth/popup-blocked':
-            errorMessage = 'O pop-up de login foi bloqueado pelo navegador. Por favor, habilite os pop-ups para este site.';
-            break;
-          case 'auth/unauthorized-domain':
-             errorMessage = 'Este domínio não está autorizado para login. Por favor, contate o suporte.';
-             break;
-          case 'auth/operation-not-allowed':
-             errorMessage = 'Login com Google não está habilitado. Por favor, contate o suporte.';
-             break;
-          default:
-            errorMessage = 'Falha ao entrar com o Google. Tente novamente mais tarde.';
-            break;
-        }
-      } else {
-        errorMessage = 'Ocorreu um erro inesperado. Verifique sua conexão e tente novamente.';
       }
       setError(errorMessage);
     }
@@ -203,16 +164,6 @@ const LoginPage: React.FC = () => {
           </button>
         </div>
       </form>
-      <div className="relative my-4">
-        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-700"></div></div>
-        <div className="relative flex justify-center text-sm"><span className="px-2 bg-black/40 backdrop-blur-sm text-gray-500">OU</span></div>
-      </div>
-      <div>
-        <button onClick={handleGoogleSignIn} disabled={loading} className="group relative w-full flex justify-center items-center py-3 px-4 border border-gray-600 text-sm font-medium rounded-lg text-white bg-gray-800/50 hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
-          <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#clip0_105_1383)"><path d="M22.56 12.25C22.56 11.45 22.49 10.68 22.36 9.92H12V14.45H18.02C17.68 15.93 16.8 17.18 15.41 18.06V20.84H19.39C21.48 18.99 22.56 16.03 22.56 12.25Z" fill="#4285F4"></path><path d="M12 23C15.06 23 17.64 22.01 19.39 20.84L15.41 18.06C14.36 18.75 13.25 19.12 12 19.12C9.37 19.12 7.14 17.36 6.3 14.99L2.2 18.01C4.01 21.12 7.72 23 12 23Z" fill="#34A853"></path><path d="M6.3 14.99C6.09 14.41 5.98 13.79 5.98 13.15C5.98 12.51 6.09 11.89 6.3 11.31V8.53L2.2 5.51C1.46 6.99 1 8.8 1 10.85C1 12.9 1.46 14.71 2.2 16.19L6.3 13.52V14.99Z" fill="#FBBC05"></path><path d="M12 5.88C13.38 5.88 14.63 6.35 15.61 7.28L19.48 3.41C17.64 1.74 15.06 0.85 12 0.85C7.72 0.85 4.01 2.88 2.2 5.99L6.3 8.98C7.14 6.61 9.37 5.88 12 5.88Z" fill="#EA4335"></path></g><defs><clipPath id="clip0_105_1383"><rect width="24" height="24" fill="white"></rect></clipPath></defs></svg>
-          Entrar com Google
-        </button>
-      </div>
     </>
   );
 

@@ -7,8 +7,6 @@ import {
   signInWithEmailAndPassword, 
   signOut,
   UserCredential,
-  GoogleAuthProvider,
-  signInWithPopup,
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -24,7 +22,6 @@ interface AuthContextType {
   signup: (email: string, password: string) => Promise<UserCredential>;
   login: (email: string, password: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
-  signInWithGoogle: () => Promise<UserCredential>;
   resetPassword: (email: string) => Promise<void>;
 }
 
@@ -68,11 +65,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return signOut(auth);
   };
 
-  const signInWithGoogle = () => {
-    const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
-  };
-
   const resetPassword = (email: string) => {
     return sendPasswordResetEmail(auth, email);
   };
@@ -84,7 +76,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signup,
     login,
     logout,
-    signInWithGoogle,
     resetPassword,
   };
 

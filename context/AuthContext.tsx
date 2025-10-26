@@ -11,7 +11,8 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { UserRole, AdminUser } from '../types/user';
-import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc, getDoc, addDoc, query, orderBy } from 'firebase/firestore';
+// FIX: import 'limit' from 'firebase/firestore' to resolve 'Cannot find name' errors.
+import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc, getDoc, addDoc, query, orderBy, writeBatch, limit } from 'firebase/firestore';
 import { Course, Module, Lesson } from '../types/course';
 import { seedInitialData } from '../data/seedData';
 
@@ -33,17 +34,19 @@ interface AuthContextType {
   adminGetAllUsers: () => Promise<AdminUser[]>;
   // Admin Course Functions
   getAllCourses: () => Promise<Course[]>;
-  addCourse: (courseData: Omit<Course, 'id'>) => Promise<Course>;
+  addCourse: (courseData: Omit<Course, 'id' | 'order'>) => Promise<Course>;
   updateCourse: (courseId: string, courseData: Partial<Course>) => Promise<void>;
   deleteCourse: (courseId: string) => Promise<void>;
+  updateCoursesOrder: (orderedCourses: Course[]) => Promise<void>;
   // Admin Module Functions
   getModulesForCourse: (courseId: string) => Promise<Module[]>;
-  addModule: (courseId: string, moduleData: Omit<Module, 'id'>) => Promise<Module>;
+  addModule: (courseId: string, moduleData: Omit<Module, 'id' | 'order'>) => Promise<Module>;
   updateModule: (courseId: string, moduleId: string, moduleData: Partial<Module>) => Promise<void>;
   deleteModule: (courseId: string, moduleId: string) => Promise<void>;
+  updateModulesOrder: (courseId: string, orderedModules: Module[]) => Promise<void>;
   // Admin Lesson Functions
   getLessonsForModule: (courseId: string, moduleId: string) => Promise<Lesson[]>;
-  addLesson: (courseId: string, moduleId: string, lessonData: Omit<Lesson, 'id'>) => Promise<Lesson>;
+  addLesson: (courseId: string, moduleId: string, lessonData: Omit<Lesson, 'id' | 'order'>) => Promise<Lesson>;
   updateLesson: (courseId: string, moduleId: string, lessonId: string, lessonData: Partial<Lesson>) => Promise<void>;
   deleteLesson: (courseId: string, moduleId: string, lessonId: string) => Promise<void>;
 }
@@ -68,20 +71,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else {
           setUserRole(UserRole.MEMBER);
         }
-
-        // Seed the database once per session to ensure data is up to date
-        const hasSeededThisSession = sessionStorage.getItem('dbSeeded');
-        if (!hasSeededThisSession) {
-          try {
-            await seedInitialData();
-            sessionStorage.setItem('dbSeeded', 'true'); // Flag that seeding is done for this session
-          } catch (error) {
-            console.error("Error seeding database:", error);
-          }
+        
+        try {
+          await seedInitialData();
+        } catch (error) {
+          console.error("Error seeding database on login:", error);
         }
+        
       } else {
         setUserRole(null);
-        sessionStorage.removeItem('dbSeeded'); // Clear on logout to allow re-seed on next login
       }
       setLoading(false);
     });
@@ -133,14 +131,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // --- Admin Course/Content Functions ---
   const getAllCourses = useCallback(async (): Promise<Course[]> => {
     const coursesCol = collection(db, 'courses');
-    const coursesSnapshot = await getDocs(query(coursesCol, orderBy('title')));
+    const coursesSnapshot = await getDocs(query(coursesCol, orderBy('order')));
     return coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Course));
   }, []);
 
-  const addCourse = useCallback(async (courseData: Omit<Course, 'id'>): Promise<Course> => {
+  const addCourse = useCallback(async (courseData: Omit<Course, 'id' | 'order'>): Promise<Course> => {
     const coursesCol = collection(db, 'courses');
-    const docRef = await addDoc(coursesCol, courseData);
-    return { id: docRef.id, ...courseData };
+    // Get current max order
+    const snapshot = await getDocs(query(coursesCol, orderBy('order', 'desc'), limit(1)));
+    const maxOrder = snapshot.empty ? -1 : snapshot.docs[0].data().order;
+    const newCourse = { ...courseData, order: maxOrder + 1 };
+
+    const docRef = await addDoc(coursesCol, newCourse);
+    return { id: docRef.id, ...newCourse };
   }, []);
 
   const updateCourse = useCallback(async (courseId: string, courseData: Partial<Course>) => {
@@ -149,21 +152,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
   
   const deleteCourse = useCallback(async (courseId: string) => {
-    // Note: This doesn't delete subcollections in Firestore. For a full delete, a Firebase Function is needed.
     const courseRef = doc(db, 'courses', courseId);
     await deleteDoc(courseRef);
   }, []);
   
+  const updateCoursesOrder = useCallback(async (orderedCourses: Course[]) => {
+    const batch = writeBatch(db);
+    orderedCourses.forEach((course, index) => {
+      const courseRef = doc(db, 'courses', course.id);
+      batch.update(courseRef, { order: index });
+    });
+    await batch.commit();
+  }, []);
+  
   const getModulesForCourse = useCallback(async (courseId: string): Promise<Module[]> => {
     const modulesCol = collection(db, 'courses', courseId, 'modules');
-    const modulesSnapshot = await getDocs(query(modulesCol, orderBy('title')));
+    const modulesSnapshot = await getDocs(query(modulesCol, orderBy('order')));
     return modulesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Module));
   }, []);
 
-  const addModule = useCallback(async (courseId: string, moduleData: Omit<Module, 'id'>): Promise<Module> => {
+  const addModule = useCallback(async (courseId: string, moduleData: Omit<Module, 'id' | 'order'>): Promise<Module> => {
     const modulesCol = collection(db, 'courses', courseId, 'modules');
-    const docRef = await addDoc(modulesCol, moduleData);
-    return { id: docRef.id, ...moduleData };
+    const snapshot = await getDocs(query(modulesCol, orderBy('order', 'desc'), limit(1)));
+    const maxOrder = snapshot.empty ? -1 : snapshot.docs[0].data().order;
+    const newModule = { ...moduleData, order: maxOrder + 1 };
+    
+    const docRef = await addDoc(modulesCol, newModule);
+    return { id: docRef.id, ...newModule };
   }, []);
 
   const updateModule = useCallback(async (courseId: string, moduleId: string, moduleData: Partial<Module>) => {
@@ -176,16 +191,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     await deleteDoc(moduleRef);
   }, []);
   
+  const updateModulesOrder = useCallback(async (courseId: string, orderedModules: Module[]) => {
+    const batch = writeBatch(db);
+    orderedModules.forEach((module, index) => {
+      const moduleRef = doc(db, 'courses', courseId, 'modules', module.id);
+      batch.update(moduleRef, { order: index });
+    });
+    await batch.commit();
+  }, []);
+
   const getLessonsForModule = useCallback(async (courseId: string, moduleId: string): Promise<Lesson[]> => {
     const lessonsCol = collection(db, 'courses', courseId, 'modules', moduleId, 'lessons');
-    const lessonsSnapshot = await getDocs(query(lessonsCol, orderBy('title')));
+    const lessonsSnapshot = await getDocs(query(lessonsCol, orderBy('order')));
     return lessonsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Lesson));
   }, []);
 
-  const addLesson = useCallback(async (courseId: string, moduleId: string, lessonData: Omit<Lesson, 'id'>): Promise<Lesson> => {
+  const addLesson = useCallback(async (courseId: string, moduleId: string, lessonData: Omit<Lesson, 'id' | 'order'>): Promise<Lesson> => {
     const lessonsCol = collection(db, 'courses', courseId, 'modules', moduleId, 'lessons');
-    const docRef = await addDoc(lessonsCol, lessonData);
-    return { id: docRef.id, ...lessonData };
+    const snapshot = await getDocs(query(lessonsCol, orderBy('order', 'desc'), limit(1)));
+    const maxOrder = snapshot.empty ? -1 : snapshot.docs[0].data().order;
+    const newLesson = { ...lessonData, order: maxOrder + 1 };
+
+    const docRef = await addDoc(lessonsCol, newLesson);
+    return { id: docRef.id, ...newLesson };
   }, []);
 
   const updateLesson = useCallback(async (courseId: string, moduleId: string, lessonId: string, lessonData: Partial<Lesson>) => {
@@ -202,8 +230,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value = useMemo(() => ({
     currentUser, userRole, loading, signup, login, logout, resetPassword,
     adminResetPassword, adminDeleteUser, adminUpdateUser, adminGetAllUsers,
-    getAllCourses, addCourse, updateCourse, deleteCourse,
-    getModulesForCourse, addModule, updateModule, deleteModule,
+    getAllCourses, addCourse, updateCourse, deleteCourse, updateCoursesOrder,
+    getModulesForCourse, addModule, updateModule, deleteModule, updateModulesOrder,
     getLessonsForModule, addLesson, updateLesson, deleteLesson,
   }), [currentUser, userRole, loading]);
 

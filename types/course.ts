@@ -6,12 +6,14 @@ export interface Lesson {
   duration: string;
   videoUrl: string;
   description: string;
+  order: number;
 }
 
 export interface Module {
   id: string;
   title: string;
   description: string;
+  order: number;
 }
 
 export interface Course {
@@ -21,4 +23,5 @@ export interface Course {
   bannerUrl: string;
   isLocked: boolean;
   password?: string;
+  order: number;
 }

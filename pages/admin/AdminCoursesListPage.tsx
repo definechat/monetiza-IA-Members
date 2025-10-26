@@ -1,8 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, DragEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Course } from '../../types/course';
 import CourseFormModal from '../../components/admin/CourseFormModal';
+
+// Toast Notification Component
+const Toast: React.FC<{ message: string; onClose: () => void }> = ({ message, onClose }) => {
+    useEffect(() => {
+        const timer = setTimeout(onClose, 3000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
+    return (
+        <div className="fixed top-5 right-5 z-50 px-4 py-3 rounded-md shadow-lg text-white bg-green-500 animate-fade-in-down">
+            {message}
+        </div>
+    );
+};
 
 const AdminCoursesListPage: React.FC = () => {
     const [courses, setCourses] = useState<Course[]>([]);
@@ -10,8 +23,10 @@ const AdminCoursesListPage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
     const [deletingCourse, setDeletingCourse] = useState<Course | null>(null);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [draggedItem, setDraggedItem] = useState<Course | null>(null);
 
-    const { getAllCourses, addCourse, updateCourse, deleteCourse } = useAuth();
+    const { getAllCourses, addCourse, updateCourse, deleteCourse, updateCoursesOrder } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,6 +43,48 @@ const AdminCoursesListPage: React.FC = () => {
         fetchCourses();
     }, [getAllCourses]);
 
+    // Drag and Drop Handlers
+    const handleDragStart = (e: DragEvent<HTMLTableRowElement>, course: Course) => {
+        setDraggedItem(course);
+        e.dataTransfer.effectAllowed = 'move';
+        e.currentTarget.style.opacity = '0.5';
+    };
+
+    const handleDragOver = (e: DragEvent<HTMLTableRowElement>) => {
+        e.preventDefault();
+    };
+
+    const handleDrop = (e: DragEvent<HTMLTableRowElement>, targetCourse: Course) => {
+        e.preventDefault();
+        if (!draggedItem || draggedItem.id === targetCourse.id) {
+            return;
+        }
+
+        const currentIndex = courses.findIndex(c => c.id === draggedItem.id);
+        const targetIndex = courses.findIndex(c => c.id === targetCourse.id);
+
+        let newCourses = [...courses];
+        const [removed] = newCourses.splice(currentIndex, 1);
+        newCourses.splice(targetIndex, 0, removed);
+        
+        setCourses(newCourses); // Optimistic update
+        
+        updateCoursesOrder(newCourses)
+            .then(() => {
+                setToastMessage("Ordem salva com sucesso!");
+            })
+            .catch(err => {
+                console.error("Failed to save order:", err);
+                setCourses(courses); // Revert on failure
+            });
+    };
+
+    const handleDragEnd = (e: DragEvent<HTMLTableRowElement>) => {
+        setDraggedItem(null);
+        e.currentTarget.style.opacity = '1';
+    };
+
+
     const handleOpenModal = (course?: Course) => {
         setEditingCourse(course || null);
         setIsModalOpen(true);
@@ -38,7 +95,7 @@ const AdminCoursesListPage: React.FC = () => {
         setEditingCourse(null);
     };
     
-    const handleSaveCourse = async (courseData: Omit<Course, 'id'> | Course) => {
+    const handleSaveCourse = async (courseData: Omit<Course, 'id' | 'order'> | Course) => {
         try {
             if ('id' in courseData) {
                 await updateCourse(courseData.id, courseData);
@@ -70,6 +127,7 @@ const AdminCoursesListPage: React.FC = () => {
 
     return (
         <>
+            {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
             <div className="p-4 sm:p-6 lg:p-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex justify-between items-center mb-8">
@@ -90,6 +148,7 @@ const AdminCoursesListPage: React.FC = () => {
                                 <table className="min-w-full divide-y divide-gray-700">
                                     <thead className="bg-gray-700/50">
                                         <tr>
+                                            <th className="px-4 py-3 w-12"></th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Curso</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Status</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Ações</th>
@@ -97,7 +156,18 @@ const AdminCoursesListPage: React.FC = () => {
                                     </thead>
                                     <tbody className="bg-gray-800 divide-y divide-gray-700">
                                         {courses.map(course => (
-                                            <tr key={course.id}>
+                                            <tr 
+                                                key={course.id}
+                                                draggable
+                                                onDragStart={(e) => handleDragStart(e, course)}
+                                                onDragOver={handleDragOver}
+                                                onDrop={(e) => handleDrop(e, course)}
+                                                onDragEnd={handleDragEnd}
+                                                className="hover:bg-gray-700/50 transition-colors cursor-grab"
+                                            >
+                                                <td className="px-4 py-4 text-gray-500 hover:text-white">
+                                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                                                </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="flex-shrink-0 h-10 w-10">

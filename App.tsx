@@ -21,6 +21,8 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminStudentsPage from './pages/admin/AdminStudentsPage';
 import AdminCoursesListPage from './pages/admin/AdminCoursesListPage';
 import AdminCourseEditPage from './pages/admin/AdminCourseEditPage';
+import AdminBonusListPage from './pages/admin/AdminBonusListPage';
+import MyCoursesPage from './pages/MyCoursesPage';
 
 function App() {
   return (
@@ -41,6 +43,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="/meus-cursos"
+              element={
+                <ProtectedRoute>
+                  <MyCoursesPage />
                 </ProtectedRoute>
               }
             />
@@ -105,6 +115,7 @@ function App() {
               <Route path="students" element={<AdminStudentsPage />} />
               <Route path="courses" element={<AdminCoursesListPage />} />
               <Route path="courses/:courseId/edit" element={<AdminCourseEditPage />} />
+              <Route path="bonus" element={<AdminBonusListPage />} />
             </Route>
            <Route
               path="/bonus"

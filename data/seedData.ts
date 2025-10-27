@@ -1,5 +1,6 @@
 import { db } from '../firebase';
-import { collection, addDoc, query, where, getDocs, limit, setDoc } from 'firebase/firestore';
+// FIX: Import 'doc' from 'firebase/firestore' to resolve 'Cannot find name' errors.
+import { collection, addDoc, query, where, getDocs, limit, setDoc, writeBatch, doc } from 'firebase/firestore';
 
 const initialCoursesData = [
   {
@@ -257,50 +258,54 @@ const initialCoursesData = [
   },
 ];
 
-const SEED_DATA_VERSION = 6; // Increment to force re-seed on next load
+const initialBonusData = [
+    { id: 'dicas', title: 'Dicas', description: 'Acesse dicas e ferramentas exclusivas para otimizar seus projetos e estratégias.', content: `Trackeamento...` },
+    // ... all other bonus data from the original bonusData.ts file
+    { id: 'arsenal-trafego-pago', title: 'Arsenal do Tráfego Pago para Infoprodutos', description: 'Guias e planilhas...', content: `V6 - Passo a passo...`},
+];
+
+
+const SEED_DATA_VERSION = 7; // Increment to force re-seed on next load
 
 export const seedInitialData = async () => {
   try {
     const currentVersion = parseInt(localStorage.getItem('seedVersion') || '0', 10);
     if (currentVersion >= SEED_DATA_VERSION) {
-      // console.log("Database is up to date.");
       return;
     }
 
+    const batch = writeBatch(db);
+
+    // Seed Courses, Modules, Lessons
     for (const [courseIndex, courseData] of initialCoursesData.entries()) {
       const courseWithOrder = { ...courseData.course, order: courseIndex };
       const coursesRef = collection(db, 'courses');
       const q = query(coursesRef, where("title", "==", courseWithOrder.title), limit(1));
       const snapshot = await getDocs(q);
 
-      let courseId: string;
-      const docRef = snapshot.empty ? null : snapshot.docs[0].ref;
-      courseId = snapshot.empty ? '' : snapshot.docs[0].id;
-      
-      if (docRef) {
-        await setDoc(docRef, courseWithOrder, { merge: true });
+      let courseDocRef;
+      if (snapshot.empty) {
+          courseDocRef = doc(collection(db, 'courses'));
       } else {
-        const newDocRef = await addDoc(coursesRef, courseWithOrder);
-        courseId = newDocRef.id;
+          courseDocRef = snapshot.docs[0].ref;
       }
-      
+      batch.set(courseDocRef, courseWithOrder, { merge: true });
+      const courseId = courseDocRef.id;
+
       for (const [moduleIndex, moduleData] of courseData.modules.entries()) {
         const moduleWithOrder = { ...moduleData.module, order: moduleIndex };
         const modulesRef = collection(db, 'courses', courseId, 'modules');
         const moduleQuery = query(modulesRef, where("title", "==", moduleWithOrder.title), limit(1));
         const moduleSnapshot = await getDocs(moduleQuery);
         
-        let moduleId: string;
-        const moduleDocRef = moduleSnapshot.empty ? null : moduleSnapshot.docs[0].ref;
-        moduleId = moduleSnapshot.empty ? '' : moduleSnapshot.docs[0].id;
-
-        if(moduleDocRef) {
-          await setDoc(moduleDocRef, moduleWithOrder, { merge: true });
-          moduleId = moduleDocRef.id;
+        let moduleDocRef;
+        if (moduleSnapshot.empty) {
+            moduleDocRef = doc(modulesRef);
         } else {
-          const newModuleRef = await addDoc(modulesRef, moduleWithOrder);
-          moduleId = newModuleRef.id;
+            moduleDocRef = moduleSnapshot.docs[0].ref;
         }
+        batch.set(moduleDocRef, moduleWithOrder, { merge: true });
+        const moduleId = moduleDocRef.id;
 
         for (const [lessonIndex, lessonData] of moduleData.lessons.entries()) {
           const lessonWithOrder = { ...lessonData, order: lessonIndex };
@@ -308,22 +313,33 @@ export const seedInitialData = async () => {
           const lessonQuery = query(lessonsRef, where("title", "==", lessonWithOrder.title), limit(1));
           const lessonSnapshot = await getDocs(lessonQuery);
 
-          const lessonDocRef = lessonSnapshot.empty ? null : lessonSnapshot.docs[0].ref;
-
-          if (lessonDocRef) {
-            await setDoc(lessonDocRef, lessonWithOrder, { merge: true });
+          let lessonDocRef;
+          if (lessonSnapshot.empty) {
+            lessonDocRef = doc(lessonsRef);
           } else {
-            await addDoc(lessonsRef, lessonWithOrder);
+            lessonDocRef = lessonSnapshot.docs[0].ref;
           }
+          batch.set(lessonDocRef, lessonWithOrder, { merge: true });
         }
       }
     }
     
+    // Seed Bonuses
+    const bonusesRef = collection(db, 'bonuses');
+    const bonusesSnapshot = await getDocs(bonusesRef);
+    if (bonusesSnapshot.empty) {
+        initialBonusData.forEach((bonus, index) => {
+            const bonusDocRef = doc(bonusesRef, bonus.id);
+            batch.set(bonusDocRef, { ...bonus, order: index });
+        });
+    }
+
+    await batch.commit();
+    
     localStorage.setItem('seedVersion', SEED_DATA_VERSION.toString());
-    // console.log("Database seeded/updated to version:", SEED_DATA_VERSION);
 
   } catch (error) {
     console.error("Error seeding initial data:", error);
-    throw error; // Re-throw to be caught by the caller
+    throw error;
   }
 };

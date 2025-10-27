@@ -1,11 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import UserHeader from '../components/UserHeader';
-import { bonusData } from '../data/bonusData';
+import { useAuth } from '../hooks/useAuth';
+import { Bonus } from '../types/bonus';
 
 const BonusPage: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [bonuses, setBonuses] = useState<Bonus[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { getAllBonuses } = useAuth();
+
+  useEffect(() => {
+    const fetchBonuses = async () => {
+      setLoading(true);
+      try {
+        const fetchedBonuses = await getAllBonuses();
+        setBonuses(fetchedBonuses);
+      } catch (error) {
+        console.error("Failed to fetch bonuses:", error);
+      }
+      setLoading(false);
+    };
+    fetchBonuses();
+  }, [getAllBonuses]);
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
@@ -24,25 +43,29 @@ const BonusPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {bonusData.map((bonus) => (
-                <div 
-                  key={bonus.id} 
-                  className="group bg-gray-800 rounded-lg shadow-xl overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-blue-500/20 flex flex-col"
-                >
-                  <div className="p-6 flex flex-col flex-grow">
-                    <h3 className="text-xl font-bold text-white mb-2">{bonus.title}</h3>
-                    <p className="text-gray-400 mb-6 flex-grow">{bonus.description}</p>
-                    <Link 
-                      to={`/bonus/${bonus.id}`} 
-                      className="mt-auto w-full bg-blue-600 group-hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300 text-center"
-                    >
-                      Ver Conteúdo
-                    </Link>
+            {loading ? (
+              <div className="text-center text-gray-400">Carregando bônus...</div>
+            ) : (
+              <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {bonuses.map((bonus) => (
+                  <div 
+                    key={bonus.id} 
+                    className="group bg-gray-800 rounded-lg shadow-xl overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-blue-500/20 flex flex-col"
+                  >
+                    <div className="p-6 flex flex-col flex-grow">
+                      <h3 className="text-xl font-bold text-white mb-2">{bonus.title}</h3>
+                      <p className="text-gray-400 mb-6 flex-grow">{bonus.description}</p>
+                      <Link 
+                        to={`/bonus/${bonus.id}`} 
+                        className="mt-auto w-full bg-blue-600 group-hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300 text-center"
+                      >
+                        Ver Conteúdo
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </main>
       </div>

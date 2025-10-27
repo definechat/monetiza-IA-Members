@@ -58,7 +58,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({ className, onToggleSidebar }) =
 
       {/* Right Side: Actions and User Info */}
       <div className="flex items-center space-x-4 md:space-x-6">
-        <Link to="/dashboard" className="px-3 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
+        <Link to="/meus-cursos" className="px-3 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
           Meus Cursos
         </Link>
         <div className="relative" ref={notificationRef}>

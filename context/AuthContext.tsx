@@ -14,6 +14,7 @@ import { UserRole, AdminUser } from '../types/user';
 // FIX: import 'limit' from 'firebase/firestore' to resolve 'Cannot find name' errors.
 import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc, getDoc, addDoc, query, orderBy, writeBatch, limit } from 'firebase/firestore';
 import { Course, Module, Lesson } from '../types/course';
+import { Bonus } from '../types/bonus';
 import { seedInitialData } from '../data/seedData';
 
 // Hardcoded admin email for demonstration
@@ -49,6 +50,12 @@ interface AuthContextType {
   addLesson: (courseId: string, moduleId: string, lessonData: Omit<Lesson, 'id' | 'order'>) => Promise<Lesson>;
   updateLesson: (courseId: string, moduleId: string, lessonId: string, lessonData: Partial<Lesson>) => Promise<void>;
   deleteLesson: (courseId: string, moduleId: string, lessonId: string) => Promise<void>;
+  // Admin Bonus Functions
+  getAllBonuses: () => Promise<Bonus[]>;
+  addBonus: (bonusData: Omit<Bonus, 'id' | 'order'>) => Promise<Bonus>;
+  updateBonus: (bonusId: string, bonusData: Partial<Bonus>) => Promise<void>;
+  deleteBonus: (bonusId: string) => Promise<void>;
+  updateBonusesOrder: (orderedBonuses: Bonus[]) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -75,7 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
           await seedInitialData();
         } catch (error) {
-          console.error("Error seeding database on login:", error);
+          console.error("Error seeding initial data:", error);
         }
         
       } else {
@@ -137,7 +144,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const addCourse = useCallback(async (courseData: Omit<Course, 'id' | 'order'>): Promise<Course> => {
     const coursesCol = collection(db, 'courses');
-    // Get current max order
     const snapshot = await getDocs(query(coursesCol, orderBy('order', 'desc'), limit(1)));
     const maxOrder = snapshot.empty ? -1 : snapshot.docs[0].data().order;
     const newCourse = { ...courseData, order: maxOrder + 1 };
@@ -226,6 +232,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     await deleteDoc(lessonRef);
   }, []);
 
+  // --- Admin Bonus Functions ---
+  const getAllBonuses = useCallback(async (): Promise<Bonus[]> => {
+    const bonusesCol = collection(db, 'bonuses');
+    const bonusesSnapshot = await getDocs(query(bonusesCol, orderBy('order')));
+    return bonusesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Bonus));
+  }, []);
+
+  const addBonus = useCallback(async (bonusData: Omit<Bonus, 'id' | 'order'>): Promise<Bonus> => {
+    const bonusesCol = collection(db, 'bonuses');
+    const snapshot = await getDocs(query(bonusesCol, orderBy('order', 'desc'), limit(1)));
+    const maxOrder = snapshot.empty ? -1 : snapshot.docs[0].data().order;
+    const newBonus = { ...bonusData, order: maxOrder + 1 };
+
+    const docRef = await addDoc(bonusesCol, newBonus);
+    return { id: docRef.id, ...newBonus };
+  }, []);
+  
+  const updateBonus = useCallback(async (bonusId: string, bonusData: Partial<Bonus>) => {
+    const bonusRef = doc(db, 'bonuses', bonusId);
+    await updateDoc(bonusRef, bonusData);
+  }, []);
+
+  const deleteBonus = useCallback(async (bonusId: string) => {
+    const bonusRef = doc(db, 'bonuses', bonusId);
+    await deleteDoc(bonusRef);
+  }, []);
+
+  const updateBonusesOrder = useCallback(async (orderedBonuses: Bonus[]) => {
+    const batch = writeBatch(db);
+    orderedBonuses.forEach((bonus, index) => {
+      const bonusRef = doc(db, 'bonuses', bonus.id);
+      batch.update(bonusRef, { order: index });
+    });
+    await batch.commit();
+  }, []);
+
 
   const value = useMemo(() => ({
     currentUser, userRole, loading, signup, login, logout, resetPassword,
@@ -233,6 +275,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     getAllCourses, addCourse, updateCourse, deleteCourse, updateCoursesOrder,
     getModulesForCourse, addModule, updateModule, deleteModule, updateModulesOrder,
     getLessonsForModule, addLesson, updateLesson, deleteLesson,
+    getAllBonuses, addBonus, updateBonus, deleteBonus, updateBonusesOrder,
   }), [currentUser, userRole, loading]);
 
   return (

@@ -2,6 +2,7 @@ import React, { useState, useRef, ChangeEvent } from 'react';
 import Sidebar from '../components/Sidebar';
 import UserHeader from '../components/UserHeader';
 import { useAuth } from '../hooks/useAuth';
+import { getYouTubeEmbedUrl } from '../utils/youtube';
 
 interface Post {
   id: number;
@@ -32,7 +33,7 @@ const initialPosts: Post[] = [
     author: { name: 'Juliana Alves', avatar: 'https://api.dicebear.com/8.x/initials/svg?seed=Juliana' },
     timestamp: '5h atrás',
     content: 'Para quem está começando com automação de marketing, recomendo fortemente focar em segmentação de leads. A IA pode analisar o comportamento do usuário e criar clusters de público-alvo muito mais precisos do que qualquer análise manual. Deixo um vídeo que explica bem o conceito.',
-    videoUrl: 'https://www.youtube.com/embed/R932C3G8_gY?rel=0',
+    videoUrl: 'https://www.youtube.com/watch?v=R932C3G8_gY',
     likes: 78,
     comments: 15,
   },
@@ -56,28 +57,6 @@ const ComunidadePage: React.FC = () => {
     const [newPostImage, setNewPostImage] = useState<string | null>(null);
     const [newPostVideoUrl, setNewPostVideoUrl] = useState<string>('');
     const [showVideoInput, setShowVideoInput] = useState<boolean>(false);
-
-    const getYouTubeEmbedUrl = (url: string): string | null => {
-        if (!url) return null;
-        let videoId = '';
-        const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-        const match = url.match(youtubeRegex);
-        if (match && match[1]) {
-            videoId = match[1];
-        } else {
-            return null; // Not a valid YouTube URL
-        }
-        
-        try {
-            const embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
-            embedUrl.searchParams.set('rel', '0');
-            embedUrl.searchParams.set('origin', window.location.origin);
-            return embedUrl.toString();
-        } catch (e) {
-            console.error("Failed to construct embed URL", e);
-            return `https://www.youtube.com/embed/${videoId}?rel=0`;
-        }
-    };
 
     const handleImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -119,7 +98,7 @@ const ComunidadePage: React.FC = () => {
 
     const processedPosts = posts.map(post => ({
         ...post,
-        videoUrl: post.videoUrl ? getYouTubeEmbedUrl(post.videoUrl) || post.videoUrl : undefined,
+        videoUrl: post.videoUrl ? getYouTubeEmbedUrl(post.videoUrl) : undefined,
     }));
 
     return (

@@ -7,6 +7,7 @@ import { Course, Module, Lesson } from '../types/course';
 import { useAuth } from '../hooks/useAuth';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { getYouTubeEmbedUrl } from '../utils/youtube';
 
 const VideoLessonPage: React.FC = () => {
   const { courseId, moduleId, lessonId } = useParams<{ courseId: string; moduleId: string; lessonId: string }>();
@@ -28,30 +29,6 @@ const VideoLessonPage: React.FC = () => {
   const [videoSrc, setVideoSrc] = useState('');
   
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
-  const getYouTubeEmbedUrl = (url: string): string => {
-    if (!url) return '';
-    let videoId = '';
-    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const match = url.match(youtubeRegex);
-
-    if (match && match[1]) {
-        videoId = match[1];
-    } else {
-        console.warn("Could not extract YouTube video ID, using original URL:", url);
-        return url;
-    }
-
-    try {
-        const embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
-        embedUrl.searchParams.set('rel', '0');
-        embedUrl.searchParams.set('origin', window.location.origin);
-        return embedUrl.toString();
-    } catch (e) {
-        console.error("Failed to construct embed URL", e);
-        return `https://www.youtube.com/embed/${videoId}?rel=0`;
-    }
-  };
 
   useEffect(() => {
     if (!courseId || !moduleId) {
@@ -96,7 +73,7 @@ const VideoLessonPage: React.FC = () => {
   const currentLesson = lessons[currentLessonIndex];
   
   useEffect(() => {
-    if (currentLesson) {
+    if (currentLesson?.videoUrl) {
         const embedUrl = getYouTubeEmbedUrl(currentLesson.videoUrl);
         setVideoSrc(embedUrl);
     }

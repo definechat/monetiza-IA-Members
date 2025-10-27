@@ -119,7 +119,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const adminGetAllUsers = useCallback(async (): Promise<AdminUser[]> => {
     const usersCol = collection(db, "users");
     const userSnapshot = await getDocs(usersCol);
-    return userSnapshot.docs.map(doc => doc.data() as AdminUser);
+    return userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AdminUser));
   }, []);
   
   const adminUpdateUser = useCallback(async (userId: string, updates: Partial<AdminUser>): Promise<AdminUser> => {

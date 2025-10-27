@@ -4,6 +4,7 @@ import UserHeader from '../components/UserHeader';
 import { useAuth } from '../hooks/useAuth';
 import UserListModal from '../components/UserListModal';
 import { allUsers, User } from '../data/mockUsers';
+import { getYouTubeEmbedUrl } from '../utils/youtube';
 
 interface Post {
   id: number;
@@ -57,28 +58,6 @@ const ProfilePage: React.FC = () => {
         setIsEditingName(false);
     }
   }
-
-  const getYouTubeEmbedUrl = (url: string): string | null => {
-    if (!url) return null;
-    let videoId = '';
-    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const match = url.match(youtubeRegex);
-    if (match && match[1]) {
-        videoId = match[1];
-    } else {
-        return null; // Not a valid YouTube URL
-    }
-    
-    try {
-        const embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
-        embedUrl.searchParams.set('rel', '0');
-        embedUrl.searchParams.set('origin', window.location.origin);
-        return embedUrl.toString();
-    } catch (e) {
-        console.error("Failed to construct embed URL", e);
-        return `https://www.youtube.com/embed/${videoId}?rel=0`;
-    }
-  };
 
   const handleImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

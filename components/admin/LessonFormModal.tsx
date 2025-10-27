@@ -1,24 +1,12 @@
 import React, { useState, FormEvent, useEffect } from 'react';
 import { Lesson } from '../../types/course';
+import { getYouTubeEmbedUrl } from '../../utils/youtube';
 
 interface LessonFormModalProps {
     lesson: Lesson | null;
     onClose: () => void;
     onSave: (lesson: Omit<Lesson, 'id'> | Lesson) => void;
 }
-
-const getYouTubeEmbedUrl = (url: string): string => {
-    if (!url) return '';
-    let videoId = '';
-    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const match = url.match(youtubeRegex);
-    if (match && match[1]) {
-        videoId = match[1];
-    } else {
-        return url; // Return original url if not a valid YouTube link
-    }
-    return `https://www.youtube.com/embed/${videoId}?rel=0`;
-};
 
 const LessonFormModal: React.FC<LessonFormModalProps> = ({ lesson, onClose, onSave }) => {
     const [title, setTitle] = useState('');

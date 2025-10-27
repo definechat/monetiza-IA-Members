@@ -17,7 +17,7 @@ const getYouTubeEmbedUrl = (url: string): string => {
     } else {
         return url; // Return original url if not a valid YouTube link
     }
-    return `https://www.youtube.com/embed/${videoId}`;
+    return `https://www.youtube.com/embed/${videoId}?rel=0`;
 };
 
 const LessonFormModal: React.FC<LessonFormModalProps> = ({ lesson, onClose, onSave }) => {

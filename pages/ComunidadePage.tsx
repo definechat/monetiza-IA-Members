@@ -32,7 +32,7 @@ const initialPosts: Post[] = [
     author: { name: 'Juliana Alves', avatar: 'https://api.dicebear.com/8.x/initials/svg?seed=Juliana' },
     timestamp: '5h atrás',
     content: 'Para quem está começando com automação de marketing, recomendo fortemente focar em segmentação de leads. A IA pode analisar o comportamento do usuário e criar clusters de público-alvo muito mais precisos do que qualquer análise manual. Deixo um vídeo que explica bem o conceito.',
-    videoUrl: 'https://www.youtube.com/embed/R932C3G8_gY',
+    videoUrl: 'https://www.youtube.com/embed/R932C3G8_gY?rel=0',
     likes: 78,
     comments: 15,
   },
@@ -60,14 +60,23 @@ const ComunidadePage: React.FC = () => {
     const getYouTubeEmbedUrl = (url: string): string | null => {
         if (!url) return null;
         let videoId = '';
-        const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+        const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
         const match = url.match(youtubeRegex);
         if (match && match[1]) {
             videoId = match[1];
         } else {
             return null; // Not a valid YouTube URL
         }
-        return `https://www.youtube.com/embed/${videoId}`;
+        
+        try {
+            const embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
+            embedUrl.searchParams.set('rel', '0');
+            embedUrl.searchParams.set('origin', window.location.origin);
+            return embedUrl.toString();
+        } catch (e) {
+            console.error("Failed to construct embed URL", e);
+            return `https://www.youtube.com/embed/${videoId}?rel=0`;
+        }
     };
 
     const handleImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
@@ -107,6 +116,11 @@ const ComunidadePage: React.FC = () => {
     };
     
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+    const processedPosts = posts.map(post => ({
+        ...post,
+        videoUrl: post.videoUrl ? getYouTubeEmbedUrl(post.videoUrl) || post.videoUrl : undefined,
+    }));
 
     return (
         <div className="flex h-screen bg-gray-900 text-gray-300">
@@ -149,7 +163,7 @@ const ComunidadePage: React.FC = () => {
                             )}
                             {newPostVideoUrl && getYouTubeEmbedUrl(newPostVideoUrl) && (
                                 <div className="mt-4 pl-16 relative aspect-video">
-                                    <iframe src={getYouTubeEmbedUrl(newPostVideoUrl)!} title="YouTube preview" className="w-full h-full rounded-lg" allowFullScreen></iframe>
+                                    <iframe src={getYouTubeEmbedUrl(newPostVideoUrl)!} title="YouTube preview" className="w-full h-full rounded-lg" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"></iframe>
                                 </div>
                             )}
                             
@@ -188,7 +202,7 @@ const ComunidadePage: React.FC = () => {
 
                         {/* Feed */}
                         <div className="space-y-6">
-                            {posts.map(post => (
+                            {processedPosts.map(post => (
                                 <div key={post.id} className="bg-gray-800 rounded-lg shadow-xl p-5">
                                     {/* Post Header */}
                                     <div className="flex items-center mb-4">
@@ -206,7 +220,7 @@ const ComunidadePage: React.FC = () => {
                                     {post.imageUrl && <img src={post.imageUrl} alt="Anexo do post" className="rounded-lg max-w-full border border-gray-700 mb-4" />}
                                     {post.videoUrl && (
                                         <div className="aspect-video mb-4">
-                                            <iframe src={post.videoUrl} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full rounded-lg"></iframe>
+                                            <iframe src={post.videoUrl} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full rounded-lg" referrerPolicy="strict-origin-when-cross-origin"></iframe>
                                         </div>
                                     )}
 

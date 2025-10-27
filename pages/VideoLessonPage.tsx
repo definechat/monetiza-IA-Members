@@ -25,8 +25,33 @@ const VideoLessonPage: React.FC = () => {
   const [moduleInfo, setModuleInfo] = useState<Module | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
+  const [videoSrc, setVideoSrc] = useState('');
   
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  const getYouTubeEmbedUrl = (url: string): string => {
+    if (!url) return '';
+    let videoId = '';
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(youtubeRegex);
+
+    if (match && match[1]) {
+        videoId = match[1];
+    } else {
+        console.warn("Could not extract YouTube video ID, using original URL:", url);
+        return url;
+    }
+
+    try {
+        const embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
+        embedUrl.searchParams.set('rel', '0');
+        embedUrl.searchParams.set('origin', window.location.origin);
+        return embedUrl.toString();
+    } catch (e) {
+        console.error("Failed to construct embed URL", e);
+        return `https://www.youtube.com/embed/${videoId}?rel=0`;
+    }
+  };
 
   useEffect(() => {
     if (!courseId || !moduleId) {
@@ -70,6 +95,13 @@ const VideoLessonPage: React.FC = () => {
   const currentLessonIndex = lessons.findIndex(l => l.id === lessonId);
   const currentLesson = lessons[currentLessonIndex];
   
+  useEffect(() => {
+    if (currentLesson) {
+        const embedUrl = getYouTubeEmbedUrl(currentLesson.videoUrl);
+        setVideoSrc(embedUrl);
+    }
+  }, [currentLesson]);
+
   const prevLesson = currentLessonIndex > 0 ? lessons[currentLessonIndex - 1] : null;
   const nextLesson = currentLessonIndex < lessons.length - 1 ? lessons[currentLessonIndex + 1] : null;
 
@@ -123,7 +155,7 @@ const VideoLessonPage: React.FC = () => {
         <main className="flex-1 flex flex-col lg:flex-row overflow-y-auto">
           <div className="flex-grow bg-black transition-all duration-300 ease-in-out flex flex-col">
             <div className="w-full aspect-video flex-shrink-0">
-              <iframe src={currentLesson.videoUrl} title={currentLesson.title} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen className="w-full h-full"></iframe>
+              <iframe src={videoSrc} title={currentLesson.title} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen className="w-full h-full"></iframe>
             </div>
             <div className="p-4 sm:p-6 lg:p-8 flex-grow">
               <h1 className="text-2xl sm:text-3xl font-bold text-white">{currentLesson.title}</h1>

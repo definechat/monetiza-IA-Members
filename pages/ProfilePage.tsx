@@ -61,14 +61,23 @@ const ProfilePage: React.FC = () => {
   const getYouTubeEmbedUrl = (url: string): string | null => {
     if (!url) return null;
     let videoId = '';
-    const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const match = url.match(youtubeRegex);
     if (match && match[1]) {
         videoId = match[1];
     } else {
         return null; // Not a valid YouTube URL
     }
-    return `https://www.youtube.com/embed/${videoId}`;
+    
+    try {
+        const embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
+        embedUrl.searchParams.set('rel', '0');
+        embedUrl.searchParams.set('origin', window.location.origin);
+        return embedUrl.toString();
+    } catch (e) {
+        console.error("Failed to construct embed URL", e);
+        return `https://www.youtube.com/embed/${videoId}?rel=0`;
+    }
   };
 
   const handleImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
@@ -234,6 +243,7 @@ const ProfilePage: React.FC = () => {
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                         className="w-full h-full rounded-lg"
+                        referrerPolicy="strict-origin-when-cross-origin"
                       ></iframe>
                     </div>
                   )}
@@ -300,6 +310,7 @@ const ProfilePage: React.FC = () => {
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowFullScreen
                                         className="w-full h-full rounded-lg"
+                                        referrerPolicy="strict-origin-when-cross-origin"
                                     ></iframe>
                                 </div>
                             )}

@@ -259,9 +259,36 @@ const initialCoursesData = [
 ];
 
 const initialBonusData = [
-    { id: 'dicas', title: 'Dicas', description: 'Acesse dicas e ferramentas exclusivas para otimizar seus projetos e estratégias.', content: `Trackeamento...` },
-    // ... all other bonus data from the original bonusData.ts file
-    { id: 'arsenal-trafego-pago', title: 'Arsenal do Tráfego Pago para Infoprodutos', description: 'Guias e planilhas...', content: `V6 - Passo a passo...`},
+  { 
+      id: 'dicas', 
+      title: 'Dicas', 
+      description: 'Acesse dicas e ferramentas exclusivas para otimizar seus projetos e estratégias.', 
+      content: 'Trackeamento de ponta a ponta.\nAnálise de Métricas.\nPlug-ins Essenciais.' 
+  },
+  { 
+      id: 'saas-revenda', 
+      title: 'Saas Revenda', 
+      description: 'Licença para revender nossas ferramentas de Software como Serviço.', 
+      content: 'https://docs.google.com/document/d/1Z2Pd6CqnhXaGuURL-IWd7nBPKaMRMMlOuxcsUEsWDTU/edit?usp=sharing' 
+  },
+  { 
+      id: 'prompts-secretos', 
+      title: 'Prompts Secretos', 
+      description: 'Acesse a mesma biblioteca de prompts que usamos para criar projetos milionários.', 
+      content: 'Em breve...' 
+  },
+  { 
+      id: 'grupo-networking', 
+      title: 'Grupo de Networking', 
+      description: 'Conecte-se com outros membros, troque experiências e forme parcerias.', 
+      content: 'Link do grupo: Em breve...' 
+  },
+  { 
+      id: 'arsenal-trafego-pago', 
+      title: 'Arsenal do Tráfego Pago para Infoprodutos', 
+      description: 'Guias e planilhas para alavancar suas vendas.', 
+      content: 'V6 - Passo a passo 2025 para vender infoprodutos: https://drive.google.com/file/d/1ad5qsrixKO6E98bB5Rzt396LrKgFn99k/view?usp=sharing\n\nPlanilha de infoprodutos: https://docs.google.com/spreadsheets/d/1wEyaV1wmIZV2PtSIbSYSvtz61pMpG4SGxJUk4riQQ-4/edit?usp=sharing' 
+  },
 ];
 
 
@@ -325,13 +352,16 @@ export const seedInitialData = async () => {
     }
     
     // Seed Bonuses
-    const bonusesRef = collection(db, 'bonuses');
-    const bonusesSnapshot = await getDocs(bonusesRef);
-    if (bonusesSnapshot.empty) {
-        initialBonusData.forEach((bonus, index) => {
-            const bonusDocRef = doc(bonusesRef, bonus.id);
-            batch.set(bonusDocRef, { ...bonus, order: index });
-        });
+    for (const [index, bonusData] of initialBonusData.entries()) {
+        const bonusDocRef = doc(db, 'bonuses', bonusData.id);
+        const bonusToSet = {
+            title: bonusData.title,
+            description: bonusData.description,
+            content: bonusData.content,
+            order: index,
+            id: bonusData.id,
+        };
+        batch.set(bonusDocRef, bonusToSet, { merge: true });
     }
 
     await batch.commit();

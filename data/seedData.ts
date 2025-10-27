@@ -21,6 +21,7 @@ const initialCoursesData = [
           {
             title: "Boas-vindas ao Curso",
             duration: "03:15",
+            type: "video",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0",
             description: "Uma introdução calorosa ao curso, apresentando os objetivos e o que você aprenderá.",
           },
@@ -35,6 +36,7 @@ const initialCoursesData = [
           {
             title: "Operação de Drones",
             duration: "12:30",
+            type: "video",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0",
             description: "Guia prático para operar drones em campo para mapeamento agrícola.",
           },
@@ -49,6 +51,7 @@ const initialCoursesData = [
           {
             title: "Estudo de Caso Real",
             duration: "15:00",
+            type: "video",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0",
             description: "Análise de um projeto de implementação de colheita inteligente do início ao fim.",
           },
@@ -67,15 +70,15 @@ const initialCoursesData = [
     modules: [
       {
         module: { title: "Módulo 1: Introdução ao Sora 2", description: "Conceitos fundamentais da nova geração de vídeos com IA." },
-        lessons: [{ title: "O que é o Sora 2?", duration: "04:50", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Descubra o poder da geração de vídeo com IA." }]
+        lessons: [{ type: "video", title: "O que é o Sora 2?", duration: "04:50", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Descubra o poder da geração de vídeo com IA." }]
       },
       {
         module: { title: "Módulo 2: Criando seus Primeiros Vídeos", description: "Guia prático para gerar vídeos impressionantes." },
-        lessons: [{ title: "Guia Prático", duration: "11:20", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Siga o passo a passo para criar seu primeiro vídeo." }]
+        lessons: [{ type: "video", title: "Guia Prático", duration: "11:20", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Siga o passo a passo para criar seu primeiro vídeo." }]
       },
       {
         module: { title: "Módulo 3: Técnicas Avançadas", description: "Dicas e truques para levar suas criações a outro nível." },
-        lessons: [{ title: "Prompts Avançados", duration: "09:10", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aprenda a escrever prompts que geram resultados incríveis." }]
+        lessons: [{ type: "video", title: "Prompts Avançados", duration: "09:10", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aprenda a escrever prompts que geram resultados incríveis." }]
       },
     ],
   },
@@ -88,9 +91,9 @@ const initialCoursesData = [
       password: "123",
     },
     modules: [
-        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
-        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
-        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ type: "video", title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ type: "video", title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ type: "video", title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
     ],
   },
   {
@@ -101,9 +104,9 @@ const initialCoursesData = [
       isLocked: false,
     },
     modules: [
-        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
-        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
-        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ type: "video", title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ type: "video", title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ type: "video", title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
     ],
   },
   {
@@ -115,9 +118,9 @@ const initialCoursesData = [
       password: "123",
     },
     modules: [
-        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
-        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
-        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ type: "video", title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ type: "video", title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ type: "video", title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
     ],
   },
     {
@@ -129,9 +132,9 @@ const initialCoursesData = [
       password: "123",
     },
     modules: [
-        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
-        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
-        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ type: "video", title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ type: "video", title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ type: "video", title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
     ],
   },
   {
@@ -143,9 +146,9 @@ const initialCoursesData = [
       password: "123",
     },
     modules: [
-        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
-        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
-        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ type: "video", title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ type: "video", title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ type: "video", title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
     ],
   },
   {
@@ -157,9 +160,9 @@ const initialCoursesData = [
       password: "123",
     },
     modules: [
-        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
-        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
-        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ type: "video", title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ type: "video", title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ type: "video", title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
     ],
   },
   {
@@ -171,9 +174,9 @@ const initialCoursesData = [
       password: "123",
     },
     modules: [
-        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
-        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
-        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ type: "video", title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ type: "video", title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ type: "video", title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
     ],
   },
   {
@@ -185,9 +188,9 @@ const initialCoursesData = [
       password: "123",
     },
     modules: [
-        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
-        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
-        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
+        { module: { title: "Módulo 1: Introdução", description: "Conteúdo introdutório do curso." }, lessons: [{ type: "video", title: "Aula Inaugural", duration: "05:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Bem-vindo ao curso!" }] },
+        { module: { title: "Módulo 2: Conteúdo Principal", description: "Aprofunde-se nos tópicos centrais." }, lessons: [{ type: "video", title: "Desenvolvimento", duration: "15:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Aula principal do módulo." }] },
+        { module: { title: "Módulo 3: Conclusão", description: "Finalização e próximos passos." }, lessons: [{ type: "video", title: "Encerramento", duration: "07:00", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0", description: "Resumo e conclusão do curso." }] },
     ],
   },
   {
@@ -207,6 +210,7 @@ const initialCoursesData = [
           {
             title: "Aulão Completo - Parte Única",
             duration: "01:30:00",
+            type: "video",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0",
             description: "Conteúdo detalhado do aulão, cobrindo todas as estratégias de monetização com IA.",
           },
@@ -221,6 +225,7 @@ const initialCoursesData = [
           {
             title: "Resumo do Aulão",
             duration: "15:00",
+            type: "video",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0",
             description: "Os principais insights e estratégias do aulão em um vídeo curto e objetivo.",
           },
@@ -234,8 +239,9 @@ const initialCoursesData = [
         lessons: [
           {
             title: "Links e Recursos Adicionais",
-            duration: "02:00",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0",
+            duration: "N/A",
+            type: "text",
+            content: "Aqui você encontrará todos os links e materiais discutidos na aula:\n- Ferramenta 1: https://example.com/tool1\n- Artigo de Referência: https://example.com/article",
             description: "Acesse todos os links, ferramentas e materiais de apoio para colocar em prática o que aprendeu.",
           },
         ],
@@ -249,6 +255,7 @@ const initialCoursesData = [
           {
             title: "Aula Bônus Sora 2",
             duration: "10:00",
+            type: "video",
             videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0",
             description: "Conteúdo exclusivo e avançado sobre a ferramenta Sora 2.",
           },
@@ -292,7 +299,7 @@ const initialBonusData = [
 ];
 
 
-const SEED_DATA_VERSION = 7; // Increment to force re-seed on next load
+const SEED_DATA_VERSION = 8; // Increment to force re-seed on next load
 
 export const seedInitialData = async () => {
   try {

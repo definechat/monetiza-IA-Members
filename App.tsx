@@ -11,7 +11,7 @@ import ProfilePage from './pages/ProfilePage';
 import PromptGeneratorPage from './pages/PromptGeneratorPage';
 import ModulesPage from './pages/ModulesPage';
 import AdminRoute from './components/AdminRoute';
-import VideoLessonPage from './pages/VideoLessonPage';
+import LessonPage from './pages/LessonPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import BonusPage from './pages/BonusPage';
 import BonusDetailsPage from './pages/BonusDetailsPage';
@@ -66,7 +66,7 @@ function App() {
               path="/courses/:courseId/modules/:moduleId/lessons/:lessonId"
               element={
                 <ProtectedRoute>
-                  <VideoLessonPage />
+                  <LessonPage />
                 </ProtectedRoute>
               }
             />

@@ -1,12 +1,16 @@
 // src/types/course.ts
 
+export type LessonType = 'video' | 'text' | 'link';
+
 export interface Lesson {
   id: string;
   title: string;
   duration: string;
-  videoUrl: string;
   description: string;
   order: number;
+  type: LessonType;
+  videoUrl?: string;
+  content?: string;
 }
 
 export interface Module {
